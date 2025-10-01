@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <div class="hero">
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-lg-5">
+                    <div class="intro-excerpt">
+                        <h1>Services</h1>
+                        <p class="mb-4">We are dedicated to providing the best stationery products and a seamless shopping experience. Our services are designed to make your life easier.</p>
+                        <p><a href="{% url 'shop' %}" class="btn btn-secondary me-2">Shop Now</a><a href="#" class="btn btn-white-outline">Explore</a></p>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="hero-img-wrap">
+                        <img src="{% static 'images/services_stationary.png' %}" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="why-choose-section">
+        <div class="container">
+            <div class="row my-5">
+                <div class="col-6 col-md-6 col-lg-3 mb-4">
+                    <div class="feature">
+                        <div class="icon">
+                            <img src="{% static 'images/truck.svg' %}" alt="Image" class="imf-fluid">
+                        </div>
+                        <h3>Fast &amp; Free Shipping</h3>
+                        <p>We offer fast and free shipping on all orders over a certain amount, ensuring your products arrive quickly and safely.</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-6 col-lg-3 mb-4">
+                    <div class="feature">
+                        <div class="icon">
+                            <img src="{% static 'images/bag.svg' %}" alt="Image" class="imf-fluid">
+                        </div>
+                        <h3>Quality Products</h3>
+                        <p>We source our products from the best brands to guarantee quality and durability. You can trust that you're getting the best.</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-6 col-lg-3 mb-4">
+                    <div class="feature">
+                        <div class="icon">
+                            <img src="{% static 'images/support.svg' %}" alt="Image" class="imf-fluid">
+                        </div>
+                        <h3>24/7 Customer Support</h3>
+                        <p>Our customer support team is available 24/7 to help you with any issues or questions you may have.</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-6 col-lg-3 mb-4">
+                    <div class="feature">
+                        <div class="icon">
+                            <img src="{% static 'images/return.svg' %}" alt="Image" class="imf-fluid">
+                        </div>
+                        <h3>Hassle-Free Returns</h3>
+                        <p>If you're not satisfied with your purchase, our simple and hassle-free return policy makes it easy to send products back.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

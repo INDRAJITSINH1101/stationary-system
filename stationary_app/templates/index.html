@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="hero">
+  <div class="container">
+    <div class="row justify-content-between">
+      <div class="col-lg-5">
+        <div class="intro-excerpt">
+          <h1>Online <span clsas="d-block">Stationery Shop</span></h1>
+          <p class="mb-4">Discover a world of high-quality pens, notebooks, and art supplies for your creative and professional needs.</p>
+          <p><a href="{% url 'shop' %}" class="btn btn-secondary me-2">Shop Now</a><a href="#" class="btn btn-white-outline">Explore</a></p>
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <div class="hero-img-wrap">
+          {% comment %} <img src="{% static 'images/stationary_hero.png' %}" class="img-fluid"> {% endcomment %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="product-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
+        <h2 class="mb-4 section-title">Crafted for excellence.</h2>
+        <p class="mb-4">We offer a wide range of stationery products made with the finest materials to ensure a smooth and enjoyable experience.</p>
+        <p><a href="{% url 'shop' %}" class="btn">Explore</a></p>
+      </div> 
+      <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
+        <a class="product-item" href="{% url 'cart' %}">
+          <img src="{% static 'images/pen_set.png' %}" class="img-fluid product-thumbnail">
+          <h3 class="product-title">Premium Pen Set</h3>
+          <strong class="product-price">$25.00</strong>
+          <span class="icon-cross">
+            <img src="{% static 'images/cross.svg' %}" class="img-fluid">
+          </span>
+        </a>
+      </div> 
+      <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
+        <a class="product-item" href="{% url 'cart' %}">
+          <img src="{% static 'images/notebook.png' %}" class="img-fluid product-thumbnail">
+          <h3 class="product-title">Luxury Notebook</h3>
+          <strong class="product-price">$18.00</strong>
+          <span class="icon-cross">
+            <img src="{% static 'images/cross.svg' %}" class="img-fluid">
+          </span>
+        </a>
+      </div>
+      <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
+        <a class="product-item" href="{% url 'cart' %}">
+          <img src="{% static 'images/art_set.png' %}" class="img-fluid product-thumbnail">
+          <h3 class="product-title">Art Supply Kit</h3>
+          <strong class="product-price">$55.00</strong>
+          <span class="icon-cross">
+            <img src="{% static 'images/cross.svg' %}" class="img-fluid">
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="why-choose-section">
+  <div class="container">
+    <div class="row justify-content-between">
+      <div class="col-lg-6">
+        <h2 class="section-title">Why Choose Us</h2>
+        <p>We are dedicated to providing the best stationery products and a seamless shopping experience.</p>
+        <div class="row my-5">
+          <div class="col-6 col-md-6">
+            <div class="feature">
+              <div class="icon">
+                <img src="{% static 'images/truck.svg' %}" alt="Image" class="imf-fluid">
+              </div>
+              <h3>Fast &amp; Free Delivery</h3>
+              <p>Get your stationery delivered to your doorstep quickly and without any extra cost.</p>
+            </div>
+          </div>
+          <div class="col-6 col-md-6">
+            <div class="feature">
+              <div class="icon">
+                <img src="{% static 'images/bag.svg' %}" alt="Image" class="imf-fluid">
+              </div>
+              <h3>Easy to Shop</h3>
+              <p>Our website is designed for a hassle-free shopping experience, so you can find what you need with ease.</p>
+            </div>
+          </div>
+          <div class="col-6 col-md-6">
+            <div class="feature">
+              <div class="icon">
+                <img src="{% static 'images/support.svg' %}" alt="Image" class="imf-fluid">
+              </div>
+              <h3>24/7 Support</h3>
+              <p>Our customer support team is available around the clock to assist you with any questions or issues.</p>
+            </div>
+          </div>
+          <div class="col-6 col-md-6">
+            <div class="feature">
+              <div class="icon">
+                <img src="{% static 'images/return.svg' %}" alt="Image" class="imf-fluid">
+              </div>
+              <h3>Hassle Free Returns</h3>
+              <p>Not happy with your product? We offer a simple return process to make sure you're always satisfied.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="img-wrap">
+          <img src="{% static 'images/why_choose_stationary.jpg' %}" alt="Image" class="img-fluid">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="we-help-section">
+  <div class="container">
+    <div class="row justify-content-between">
+      <div class="col-lg-7 mb-5 mb-lg-0">
+        <div class="imgs-grid">
+          <div class="grid grid-1"><img src="{% static 'images/img_grid_1_stationary.jpg' %}" alt="Untree.co"></div>
+          <div class="grid grid-2"><img src="{% static 'images/img_grid_2_stationary.jpg' %}" alt="Untree.co"></div>
+          <div class="grid grid-3"><img src="{% static 'images/img_grid_3_stationary.jpg' %}" alt="Untree.co"></div>
+        </div>
+      </div>
+      <div class="col-lg-5 ps-lg-5">
+        <h2 class="section-title mb-4">We Help You Find the Perfect Supplies for Your Needs</h2>
+        <p>Whether you are a student, an artist, or a professional, we have a wide range of products to help you express your creativity and boost your productivity. Our curated selection ensures you get only the best.</p>
+        <ul class="list-unstyled custom-list my-4">
+          <li>High-quality pens and pencils for a smooth writing experience.</li>
+          <li>Durable and beautiful notebooks for all your thoughts and ideas.</li>
+          <li>A wide variety of art supplies to bring your creations to life.</li>
+          <li>Organizers and accessories to keep your workspace tidy.</li>
+        </ul>
+        <p><a herf="#" class="btn">Explore</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="popular-product">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 col-md-6 col-lg-4 mb-4 mb-lg-0">
+        <div class="product-item-sm d-flex">
+          <div class="thumbnail">
+            <img src="{% static 'images/pen_set.png' %}" alt="Image" class="img-fluid">
+          </div>
+          <div class="pt-3">
+            <h3>Premium Pen Set</h3>
+            <p>A collection of high-quality pens that are perfect for writing and sketching.</p>
+            <p><a href="#">Read More</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4 mb-4 mb-lg-0">
+        <div class="product-item-sm d-flex">
+          <div class="thumbnail">
+            <img src="{% static 'images/notebook.png' %}" alt="Image" class="img-fluid">
+          </div>
+          <div class="pt-3">
+            <h3>Luxury Notebook</h3>
+            <p>A beautiful notebook with a smooth texture, ideal for journaling or note-taking.</p>
+            <p><a href="#">Read More</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4 mb-4 mb-lg-0">
+        <div class="product-item-sm d-flex">
+          <div class="thumbnail">
+            <img src="{% static 'images/art_set.png' %}" alt="Image" class="img-fluid">
+          </div>
+          <div class="pt-3">
+            <h3>Art Supply Kit</h3>
+            <p>This comprehensive kit includes everything an artist needs to create masterpieces.</p>
+            <p><a href="#">Read More</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="blog-section">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-md-6">
+        <h2 class="section-title">Top Sale</h2>
+      </div>
+      <div class="col-md-6 text-start text-md-end">
+        <a href="#" class="more">View All Product</a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
+        <div class="post-entry">
+          <a href="#" class="post-thumbnail"><img src="{% static 'images/blog_1.jpg' %}" alt="Image" class="img-fluid"></a>
+          <div class="post-content-entry">
+            <h3><a href="#">The Best Pens for Journaling</a></h3>
+            <div class="meta">
+              {% comment %} <span>by <a href="#">Kristin Watson</a></span> <span>on <a href="#">Oct 1, 2025</a></span> {% endcomment %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
+        <div class="post-entry">
+          <a href="#" class="post-thumbnail"><img src="{% static 'images/blog_2.jpg' %}" alt="Image" class="img-fluid"></a>
+          <div class="post-content-entry">
+            <h3><a href="#">How to Create a Productive Workspace</a></h3>
+            <div class="meta">
+              {% comment %} <span>by <a href="#">Robert Fox</a></span> <span>on <a href="#">Sep 25, 2025</a></span> {% endcomment %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
+        <div class="post-entry">
+          <a href="#" class="post-thumbnail"><img src="{% static 'images/blog_3.jpg' %}" alt="Image" class="img-fluid"></a>
+          <div class="post-content-entry">
+            <h3><a href="#">Our Top 5 Notebooks of the Year</a></h3>
+            <div class="meta">
+              {% comment %} <span>by <a href="#">Kristin Watson</a></span> <span>on <a href="#">Sep 20, 2025</a></span> {% endcomment %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

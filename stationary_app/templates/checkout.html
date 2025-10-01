@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <div class="hero">
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-lg-5">
+                    <div class="intro-excerpt">
+                        <h1>Checkout</h1>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="untree_co-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row mb-5">
+                        <div class="col-md-12">
+                            <div class="border p-4 rounded" role="alert">
+                                Returning customer? <a href="{% url 'signin' %}">Click here</a> to login
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3 p-lg-5 border bg-white">
+                        <h3 class="h6 text-black text-uppercase mb-3">Billing Details</h3>
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="c_fname" class="text-black">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="c_fname" name="c_fname">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="c_lname" class="text-black">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="c_lname" name="c_lname">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label for="c_address" class="text-black">Address <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="c_address" name="c_address" placeholder="Street address">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="c_state_country" class="text-black">State / Country <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="c_state_country" name="c_state_country">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="c_postal_zip" class="text-black">Postal / Zip <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="c_postal_zip" name="c_postal_zip">
+                            </div>
+                        </div>
+                        <div class="form-group row mb-5">
+                            <div class="col-md-6">
+                                <label for="c_email_address" class="text-black">Email Address <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="c_email_address" name="c_email_address">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="c_phone" class="text-black">Phone <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="c_phone" name="c_phone" placeholder="Phone Number">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 p-lg-5 border bg-white">
+                        <h3 class="h6 text-black text-uppercase mb-3">Your Order</h3>
+                        <ul class="list-unstyled mb-3">
+                            <li><a href="#">Product 1</a> <span>$49.00</span></li>
+                            <li><a href="#">Product 2</a> <span>$78.00</span></li>
+                            <li class="mb-3"><a href="#">Product 3</a> <span>$43.00</span></li>
+                            <li class="text-black font-weight-bold">Order Total <span>$170.00</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location='{% url 'thankyou' %}'">Place Order</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
