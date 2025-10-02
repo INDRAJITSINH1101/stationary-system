@@ -39,12 +39,13 @@
           <li class="nav-item {% if 'contact' in request.path %}active{% endif %}">
             <a class="nav-link" href="{% url 'contact' %}">Contact us</a>
           </li>
-          <li class="nav-item {% if 'signup' in request.path %}active{% endif %}">
-            <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
-          </li>
-          <li class="nav-item {% if 'signin' in request.path %}active{% endif %}">
-            <a class="nav-link" href="{% url 'signin' %}">Sign In</a>
-          </li>
+          {% if user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Profile</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">Sign Up</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'signin' %}">Sign In</a></li>
+          {% endif %}
         </ul>
         <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
           <li><a class="nav-link" href="{% url 'profile' %}"><img src="{% static 'images/user.svg' %}"></a></li>
