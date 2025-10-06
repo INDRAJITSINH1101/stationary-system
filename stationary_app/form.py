@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Products
+from .models import Products,UserProfile
+import re
+from django.core.exceptions import ValidationError
 
 
 class signupform(forms.ModelForm):
@@ -14,8 +16,11 @@ class signupform(forms.ModelForm):
 
   def clean_email(self):
       email = self.cleaned_data.get('email')
-      if not email or '@' not in email:
-          raise forms.ValidationError("Please enter a valid email address.")
+      pattern = r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
+
+      if not re.match(pattern, email):
+        raise ValidationError("Invalid email format. Please enter a valid email address.")
+
       return email
 
   def clean(self):
@@ -61,6 +66,22 @@ class PasswordResetConfirmForm(forms.Form):
             raise forms.ValidationError("Passwords do not match.")
 
         return cleaned_data
+    
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
+class UserProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['mobile_number', 'address']
+
+    def clean_mobile_number(self):
+        mobile_number = self.cleaned_data.get('mobile_number')
+        if mobile_number and not mobile_number.isdigit():
+            raise forms.ValidationError("Mobile number must contain only digits.")
+        return mobile_number
      
      
 class ProductForm(forms.ModelForm):

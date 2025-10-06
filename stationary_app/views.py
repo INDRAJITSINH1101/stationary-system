@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
-from .form import signupform,ProductForm,PasswordResetConfirmForm,PasswordResetForm
+from .form import signupform,ProductForm,PasswordResetConfirmForm,PasswordResetForm,UserProfileUpdateForm,UserUpdateForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required,user_passes_test
-from .models import Products
+from .models import Products,UserProfile
 from django.contrib.auth.models import User
 
 # Create your views here.
@@ -99,8 +99,30 @@ def password_reset_confirm(request):
 
     return render(request, 'password_reset_confirm.html', {'form': form, 'username': username})
     
-def profile_view(request): 
-    return render(request, 'profile.html')
+@login_required
+def profile_view(request):
+    try:
+        user_profile = request.user.userprofile
+    except UserProfile.DoesNotExist:
+        user_profile = UserProfile.objects.create(user=request.user)
+    
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = UserProfileUpdateForm(request.POST, instance=user_profile)
+        
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return redirect('profile') 
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = UserProfileUpdateForm(instance=user_profile)
+        
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form
+    }
+    return render(request, 'profile.html', context)
 
 def is_admin(user):
     return user.is_superuser
