@@ -1,7 +1,9 @@
-from django.shortcuts import render,redirect
-from .form import signupform
-from django.contrib.auth import authenticate,login,logout
+from django.shortcuts import render, redirect
+from .form import signupform,ProductForm
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required,user_passes_test
+from .models import Products
 
 # Create your views here.
 def home_page(request):
@@ -38,7 +40,8 @@ def signup_view(request):
             user = form.save(commit=False)
             user.set_password(form.cleaned_data['password'])
             user.save()
-            return redirect('signin')
+            login(request, user)
+            return redirect('home')
         
         
     else:
@@ -66,4 +69,48 @@ def logout_view(request):
     
 def profile_view(request): 
     return render(request, 'profile.html')
+
+def is_admin(user):
+    return user.is_superuser
+
+@login_required
+@user_passes_test(is_admin)
+def admin_dashboard(request):
+    products = Products.objects.all()
+    context = {'products': products}
+    return render(request, 'admin_dashboard/dashboard.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def add_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_dashboard')
+    else:
+        form = ProductForm()
+    return render(request, 'admin_dashboard/add_product.html', {'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def edit_product(request, pk):
+    product = Products.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_dashboard')
+    else:
+        form = ProductForm(instance=product)
+    return render(request, 'admin_dashboard/edit_product.html', {'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def delete_product(request, pk):
+    product = Products.objects.get(pk=pk)
+    if request.method == 'POST':
+        product.delete()
+        return redirect('admin_dashboard')
+    return render(request, 'admin_dashboard/delete_product.html', {'product': product})
 

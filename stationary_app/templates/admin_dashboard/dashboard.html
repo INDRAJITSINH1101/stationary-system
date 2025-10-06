@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .btn { padding: 8px 12px; text-decoration: none; border-radius: 5px; color: white; margin-right: 5px; }
+        .btn-add { background-color: #4CAF50; }
+        .btn-edit { background-color: #2196F3; }
+        .btn-delete { background-color: #f44336; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        <a href="{% url 'add_product' %}" class="btn btn-add">Add New Product</a>
+        <p>Hello, {{ user.username }} | <a href="{% url 'logout' %}">Logout</a></p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% comment %} {% for product in products %}
+                <tr>
+                    <td>{{ product.id }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>${{ product.price }}</td>
+                    <td>
+                        <a href="{% url 'edit_product' pk=product.pk %}" class="btn btn-edit">Edit</a>
+                        <a href="{% url 'delete_product' pk=product.pk %}" class="btn btn-delete">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %} {% endcomment %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
