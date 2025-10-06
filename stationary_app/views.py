@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
-from .form import signupform,ProductForm
+from .form import signupform,ProductForm,PasswordResetConfirmForm,PasswordResetForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required,user_passes_test
 from .models import Products
+from django.contrib.auth.models import User
 
 # Create your views here.
 def home_page(request):
@@ -66,6 +67,37 @@ def signin_view(request):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+def custom_password_reset(request):
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            request.session['password_reset_username'] = username 
+            return redirect('password_reset_confirm')
+    else:
+        form = PasswordResetForm()
+    return render(request, 'password_reset.html', {'form': form})
+
+def password_reset_confirm(request):
+    username = request.session.get('password_reset_username')
+    if not username:
+        return redirect('password_reset')  
+
+    user = User.objects.get(username=username)
+
+    if request.method == 'POST':
+        form = PasswordResetConfirmForm(request.POST)
+        if form.is_valid():
+            new_password = form.cleaned_data['new_password']
+            user.set_password(new_password)
+            user.save()
+            del request.session['password_reset_username']
+            return redirect('signin')
+    else:
+        form = PasswordResetConfirmForm()
+
+    return render(request, 'password_reset_confirm.html', {'form': form, 'username': username})
     
 def profile_view(request): 
     return render(request, 'profile.html')

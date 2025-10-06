@@ -19,5 +19,7 @@ urlpatterns = [
     path('admin_dashboard/add/', views.add_product, name='add_product'),
     path('admin_dashboard/edit/<int:pk>/', views.edit_product, name='edit_product'),
     path('admin_dashboard/delete/<int:pk>/', views.delete_product, name='delete_product'),
+    path('password_reset/', views.custom_password_reset, name='password_reset'),
+    path('password_reset_confirm/', views.password_reset_confirm, name='password_reset_confirm'),
 ]
 

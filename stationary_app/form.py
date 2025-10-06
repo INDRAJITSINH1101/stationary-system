@@ -38,6 +38,29 @@ class signupform(forms.ModelForm):
       if commit:
           user.save()
       return user
+  
+class PasswordResetForm(forms.Form):
+    username = forms.CharField(max_length=150, required=True)
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if not User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Username not found. Please enter a correct username.")
+        return username
+
+class PasswordResetConfirmForm(forms.Form):
+    new_password = forms.CharField(widget=forms.PasswordInput, min_length=8)
+    confirm_new_password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get('new_password')
+        confirm_new_password = cleaned_data.get('confirm_new_password')
+
+        if new_password and confirm_new_password and new_password != confirm_new_password:
+            raise forms.ValidationError("Passwords do not match.")
+
+        return cleaned_data
      
      
 class ProductForm(forms.ModelForm):
