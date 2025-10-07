@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Products,UserProfile
+from .models import UserProfile,Product
 import re
 from django.core.exceptions import ValidationError
 
@@ -83,10 +83,9 @@ class UserProfileUpdateForm(forms.ModelForm):
             raise forms.ValidationError("Mobile number must contain only digits.")
         return mobile_number
      
-     
 class ProductForm(forms.ModelForm):
     class Meta:
-        model = Products
-        fields = ['name', 'description', 'price', 'image']
+        model = Product
+        fields = ['name','category','company','price','description','image']
 
     

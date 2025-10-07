@@ -1,17 +1,33 @@
-from django.shortcuts import render, redirect
-from .form import signupform,ProductForm,PasswordResetConfirmForm,PasswordResetForm,UserProfileUpdateForm,UserUpdateForm
+from django.shortcuts import render, redirect,get_object_or_404
+from .form import signupform,PasswordResetConfirmForm,PasswordResetForm,UserProfileUpdateForm,UserUpdateForm,ProductForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.decorators import login_required,user_passes_test
-from .models import Products,UserProfile
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .models import UserProfile,Product,Category
 from django.contrib.auth.models import User
 
 # Create your views here.
 def home_page(request):
     return render(request, 'index.html')
 
-def shop_page(request):
-    return render(request, 'shop.html')
+def shop_page(request, category_name=None):
+    if category_name:
+        category = get_object_or_404(Category, name=category_name)
+        products = Product.objects.filter(category=category)
+    else:
+        products = Product.objects.all()
+
+    categories = Category.objects.all()
+    context = {
+        'products': products,
+        'categories': categories,
+        'selected_category': category_name,
+    }
+    return render(request, 'shop.html', context)
+
+def product_details(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    return render(request, 'admin_dashboard/product_details.html', {'product': product})
 
 def about_page(request):
     return render(request, 'about.html')
@@ -49,20 +65,22 @@ def signup_view(request):
         form = signupform()
     return render(request, 'signup.html',{'form':form})
 
-def signin_view(request): 
+def signin_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
-            user = authenticate(username=username,password=password)
+            user = authenticate(username=username, password=password)
             if user is not None:
-                login(request,user)
-                return redirect('home')
-            
+                login(request, user)
+                if user.is_superuser:
+                    return redirect('admin_dashboard')
+                else:
+                    return redirect('home')
     else:
         form = AuthenticationForm()
-    return render(request, 'signin.html',{'form':form})
+    return render(request, 'signin.html', {'form': form})
 
 def logout_view(request):
     logout(request)
@@ -130,9 +148,11 @@ def is_admin(user):
 @login_required
 @user_passes_test(is_admin)
 def admin_dashboard(request):
-    products = Products.objects.all()
-    context = {'products': products}
-    return render(request, 'admin_dashboard/dashboard.html', context)
+    products = Product.objects.all()  
+    context = {
+        'products': products  
+    }
+    return render(request, 'admin_dashboard/admin_dashboard.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -149,7 +169,7 @@ def add_product(request):
 @login_required
 @user_passes_test(is_admin)
 def edit_product(request, pk):
-    product = Products.objects.get(pk=pk)
+    product = Product.objects.get(pk=pk)
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
@@ -162,7 +182,7 @@ def edit_product(request, pk):
 @login_required
 @user_passes_test(is_admin)
 def delete_product(request, pk):
-    product = Products.objects.get(pk=pk)
+    product = Product.objects.get(pk=pk)
     if request.method == 'POST':
         product.delete()
         return redirect('admin_dashboard')

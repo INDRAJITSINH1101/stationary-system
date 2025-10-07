@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="product-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="product-image-container">
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="product-details-content">
+          <h2 class="section-title mb-4">{{ product.name }}</h2>
+          <p class="product-price">{{ product.price }}</p>
+          <p class="product-description">{{ product.description }}</p>
+          <div class="product-meta">
+            <p><strong>Category:</strong> {{ product.category.name|default:"N/A" }}</p>
+            <p><strong>Company:</strong> {{ product.company }}</p>
+          </div>
+          <a href="{% url 'shop' %}" class="btn btn-secondary mt-3">Back to Shop</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
