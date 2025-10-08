@@ -1,0 +1,40 @@
+{% extends 'base1.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Category Management</h2>
+    <a href="{% url 'add_category' %}" class="btn btn-primary mb-3">Add New Category</a>
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-primary mb-3">Back to Dashboard</a>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+            <tr>
+                <td>{{ category.name }}</td>
+                <td>
+                    <a href="{% url 'delete_category' pk=category.pk %}"class="btn btn-danger btn-sm" style="background-color: #f44336">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">No categories found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+
+{% comment %} <a
+            href="{% url 'add_category' pk=category.pk %}"
+            class="btn btn-primary btn-sm"
+            style="background-color: #2196f3"
+            >Edit</a
+          >
+           {% endcomment %}

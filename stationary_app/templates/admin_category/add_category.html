@@ -1,0 +1,19 @@
+{% extends 'base1.html' %}
+{% block content %}
+<head>
+    <style>
+        .btn-back { background-color: #555; text-decoration: none; }
+    </style>
+</head>
+<div class="container mt-5">
+    <h2>Add New Category</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Save Category</button>
+        <a href="{% url 'admin_categories' %}" class="btn btn-secondary">Cancel</a>
+        <br><br>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-back">Back to Dashboard</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect,get_object_or_404
-from .form import signupform,PasswordResetConfirmForm,PasswordResetForm,UserProfileUpdateForm,UserUpdateForm,ProductForm
+from .form import signupform,PasswordResetConfirmForm,PasswordResetForm,UserProfileUpdateForm,UserUpdateForm,ProductForm,CategoryForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import UserProfile,Product,Category
 from django.contrib.auth.models import User
+
 
 # Create your views here.
 def home_page(request):
@@ -188,3 +189,30 @@ def delete_product(request, pk):
         return redirect('admin_dashboard')
     return render(request, 'admin_dashboard/delete_product.html', {'product': product})
 
+@login_required
+@user_passes_test(is_admin)
+def admin_categories(request):
+    categories = Category.objects.all()
+    context = {'categories':categories}
+    return render(request,'admin_category/admin_categories.html',context)
+
+@login_required
+@user_passes_test(is_admin)
+def add_category(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_categories')
+    else:
+        form = CategoryForm()
+    return render(request, 'admin_category/add_category.html', {'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def delete_category(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    if request.method == 'POST':
+        category.delete()
+        return redirect('admin_categories')
+    return render(request, 'admin_category/delete_category.html', {'category': category})

@@ -39,6 +39,11 @@
           <li class="nav-item {% if 'contact' in request.path %}active{% endif %}">
             <a class="nav-link" href="{% url 'contact' %}">Contact us</a>
           </li>
+          <!-- NEW: Admin dashboard button in header, only for admin -->
+            {% if user.is_authenticated and user.is_superuser %}
+              <a href="{% url 'admindashboard' %}" class="btn btn-info">Admin Dashboard</a>
+            {% endif %}
+
           {% if user.is_authenticated %}
             <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Profile</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>

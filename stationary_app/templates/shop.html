@@ -17,18 +17,18 @@
 <div class="untree_co-section product-section before-footer-section">
   <div class="container">
     <div class="row mb-4">
-        <div class="col-md-12">
-            <h2>Filter by Category</h2>
-            <ul class="list-inline">
-                <li class="list-inline-item">
-                    <a href="{% url 'shop' %}" class="btn {% if not selected_category %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
-                </li>
-                {% for category in categories %}
-                <li class="list-inline-item">
-                    <a href="{% url 'shop_by_category' category_name=category.name %}" class="btn {% if selected_category == category.name %}btn-primary{% else %}btn-outline-primary{% endif %}">{{ category.name }}</a>
-                </li>
-                {% endfor %}
-            </ul>
+        <div class="col-md-4">
+          <h2>Filter by Category</h2>
+          <div class="mb-4">
+            <label for="category-filter" class="form-label">Select a Category:</label>
+            <select class="form-select" id="category-filter" onchange="window.      location.href=this.value;">
+              <option value="{% url 'shop' %}" {% if not selected_category %}selected{% endif %}>All</option>
+              {% for category in categories %}
+              <option value="{% url 'shop_by_category' category_name=category.name %}" {% if selected_category == category.name %}selected{% endif %}>{{ category.name }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
         </div>
     </div>
     <div class="row">
@@ -37,7 +37,8 @@
         <a class="product-item" href="{% url 'product_details' pk=product.pk %}">
           <img src="{{ product.image.url }}" class="img-fluid product-thumbnail">
           <h3 class="product-title">{{ product.name }}</h3>
-          <strong class="product-price">${{ product.price }}</strong>
+          <h3 class="product-title">Company : {{ product.company }}</h3>
+          <strong class="product-price">{{ product.price }}</strong>
           <span class="icon-cross">
             <img src="{% static 'images/cross.svg' %}" class="img-fluid">
           </span>

@@ -23,5 +23,9 @@ urlpatterns = [
     path('admin_dashboard/edit/<int:pk>/', views.edit_product, name='edit_product'),
     path('admin_dashboard/delete/<int:pk>/', views.delete_product, name='delete_product'),
     path('product/<int:pk>/', views.product_details, name='product_details'),
+    path('admin_dashboard/categories',views.admin_categories, name='admin_categories'),
+    path('admin_dashboard/categories/add/', views.add_category, name='add_category'),
+    path('admin_dashboard/categories/delete/<int:pk>/', views.delete_category, name='delete_category'),
+    
 ]
 
