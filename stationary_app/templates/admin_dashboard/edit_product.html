@@ -19,13 +19,64 @@
     <div class="container">
         <h1>Edit Product</h1>
         <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn">Update Product</button>
-            <a href="{% url 'admin_dashboard' %}" class="btn btn-back">Back to Dashboard</a>
-        </form>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div>
+      {{ form.name.label_tag }} {{ form.name }}
+    </div>
+    <div>
+      {{ form.category.label_tag }} {{ form.category }}
+    </div>
+    <div>
+      {{ form.company.label_tag }} {{ form.company }}
+    </div>
+    <div>
+      {{ form.price.label_tag }} {{ form.price }}
+    </div>
+    <div>
+      {{ form.description.label_tag }} {{ form.description }}
+    </div>
+
+    <div>
+      {{ form.image.label_tag }} {{ form.image }} <!--comment: optional primary image -->
+    </div>
+
+    <div>
+      <label for="id_images">Add more images</label>
+      {{ form.images }} <!--comment: multiple file input -->
+    </div>
+
+    <hr>
+
+    <h3>Existing Images</h3>
+    {% for img in images %}
+      <div style="display:inline-block; margin:8px;">
+        <img src="{{ img.image.url }}" width="120" height="120" alt="preview"> <!--comment: uniform preview without CSS -->
+        <div>
+          <label>
+            <input type="checkbox" name="design_image_ids" value="{{ img.id }}" {% if img.is_design %}checked{% endif %}>
+            Design <!--comment: tick to mark as design -->
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" name="delete_image_ids" value="{{ img.id }}">
+            Delete <!--comment: mark this image for deletion -->
+          </label>
+        </div>
+      </div>
+    {% empty %}
+      <p>No images yet.</p>
+    {% endfor %}
+
+    <div style="margin-top:16px;">
+      <button type="submit" class="btn">Update Product</button>
+      <a href="{% url 'admin_dashboard' %}" >Back to Dashboard</a>
+    </div>
+  </form>
         <br>
         
+            
     </div>
 </body>
 {% endblock %}

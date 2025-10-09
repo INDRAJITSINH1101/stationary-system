@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect,get_object_or_404
-from .form import signupform,PasswordResetConfirmForm,PasswordResetForm,UserProfileUpdateForm,UserUpdateForm,ProductForm,CategoryForm
+from .form import signupform,PasswordResetConfirmForm,PasswordResetForm,UserProfileUpdateForm,UserUpdateForm,ProductForm,CategoryForm,ProductImageForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import UserProfile,Product,Category
 from django.contrib.auth.models import User
+from django.db.models import Q # Import Q object for complex lookups
 
 
 # Create your views here.
@@ -12,17 +13,28 @@ def home_page(request):
     return render(request, 'index.html')
 
 def shop_page(request, category_name=None):
+    products = Product.objects.all()
+    categories = Category.objects.all()
+    selected_category = category_name
+
+    # Check for a search query
+    query = request.GET.get('q')
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(company__icontains=query) |
+            Q(description__icontains=query)
+        ).distinct()
+    
+    # Filter by category if a category name is provided
     if category_name:
         category = get_object_or_404(Category, name=category_name)
-        products = Product.objects.filter(category=category)
-    else:
-        products = Product.objects.all()
+        products = products.filter(category=category)
 
-    categories = Category.objects.all()
     context = {
         'products': products,
         'categories': categories,
-        'selected_category': category_name,
+        'selected_category': selected_category,
     }
     return render(request, 'shop.html', context)
 
@@ -236,3 +248,18 @@ def delete_category(request, pk):
         category.delete()
         return redirect('admin_categories')
     return render(request, 'admin_category/delete_category.html', {'category': category})
+
+login_required
+@user_passes_test(is_admin)
+def add_product_image(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        form = ProductImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.save(commit=False)
+            image.product = product
+            image.save()
+            return redirect('admin_dashboard')
+    else:
+        form = ProductImageForm()
+    return render(request, 'admin_dashboard/add_product_image.html', {'form': form, 'product': product})

@@ -42,6 +42,8 @@
                     <td>
                         <a href="{% url 'edit_product' pk=product.pk %}" class="btn btn-primary btn-sm" style="background-color: #2196F3;">Edit</a>
                         <a href="{% url 'delete_product' pk=product.pk %}" class="btn btn-danger btn-sm" style="background-color: #f44336;">Delete</a>
+                        <a href="{% url 'add_product_image' pk=product.pk %}" class="btn btn-success btn-sm" style="background-color: #4CAF50;">Add Image</a>
+                        <a href="{% url 'product_details' product.pk %}" class="btn btn-primary btn-sm" style="background-color: green">View</a>
                     </td>
                 </tr>
                 {% empty %}

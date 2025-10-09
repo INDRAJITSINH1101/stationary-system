@@ -13,7 +13,7 @@
         <div class="intro-excerpt">
           <h1>Online <span clsas="d-block">Stationery Shop</span></h1>
           <p class="mb-4">Discover a world of high-quality pens, notebooks, and art supplies for your creative and professional needs.</p>
-          <p><a href="{% url 'shop' %}" class="btn btn-secondary me-2">Shop Now</a><a href="#" class="btn btn-white-outline">Explore</a></p>
+          <p><a href="{% url 'shop' %}" class="btn btn-secondary me-2">Shop Now</a>
         </div>
       </div>
       <div class="col-lg-7">
@@ -25,7 +25,16 @@
   </div>
 </div>
 <div class="product-section">
+  
   <div class="container">
+    <div class="col-md-8">
+            <form method="get" action="{% url 'shop' %}">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Search for products..." name="q" >
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+            </form>
+        </div>
     <div class="row">
       <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
         <h2 class="mb-4 section-title">Crafted for excellence.</h2>
