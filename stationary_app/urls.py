@@ -25,7 +25,9 @@ urlpatterns = [
     path('product/<int:pk>/', views.product_details, name='product_details'),
     path('admin_dashboard/categories',views.admin_categories, name='admin_categories'),
     path('admin_dashboard/categories/add/', views.add_category, name='add_category'),
+    path('admin_dashboard/categories/edit/<int:pk>/', views.edit_category, name='edit_category'),
     path('admin_dashboard/categories/delete/<int:pk>/', views.delete_category, name='delete_category'),
+   
     
 ]
 

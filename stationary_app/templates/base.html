@@ -26,10 +26,19 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarsStationery">
+
+        
         <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+
+          {% if user.is_authenticated and user.is_superuser %}
+            <li class="nav-item">
+            <a href="{% url 'admin_dashboard' %}" class="nav-link">Admin Dashboard</a>
+            </li>
+          {% endif %}
           <li class="nav-item {% if request.path == '/' %}active{% endif %}">
             <a class="nav-link" href="{% url 'home' %}">Home</a>
           </li>
+          
           <li class="nav-item {% if 'shop' in request.path %}active{% endif %}">
             <a class="nav-link" href="{% url 'shop' %}">Shop</a>
           </li>
@@ -39,11 +48,7 @@
           <li class="nav-item {% if 'contact' in request.path %}active{% endif %}">
             <a class="nav-link" href="{% url 'contact' %}">Contact us</a>
           </li>
-          <!-- NEW: Admin dashboard button in header, only for admin -->
-            {% if user.is_authenticated and user.is_superuser %}
-              <a href="{% url 'admindashboard' %}" class="btn btn-info">Admin Dashboard</a>
-            {% endif %}
-
+     
           {% if user.is_authenticated %}
             <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Profile</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>

@@ -1,0 +1,16 @@
+{% extends 'base1.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Edit Category: {{ category.name }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="{{ form.name.id_for_label }}" class="form-label">Category Name:</label>
+            {{ form.name }}
+        </div>
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <a href="{% url 'admin_categories' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

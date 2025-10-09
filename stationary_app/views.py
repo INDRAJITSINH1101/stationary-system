@@ -210,6 +210,26 @@ def add_category(request):
 
 @login_required
 @user_passes_test(is_admin)
+def edit_category(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_categories')
+    else:
+        form = CategoryForm(instance=category)
+
+    context = {
+        'form': form,
+        'category': category 
+    }
+
+    return render(request, 'admin_category/edit_category.html', context)
+
+@login_required
+@user_passes_test(is_admin)
 def delete_category(request, pk):
     category = get_object_or_404(Category, pk=pk)
     if request.method == 'POST':
