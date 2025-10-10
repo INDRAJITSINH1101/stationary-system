@@ -6,77 +6,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Product</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        .container { max-width: 600px; margin: auto; padding: 20px; }
-        form div { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; }
-        input[type="text"], textarea, input[type="number"] { width: 100%; padding: 8px; box-sizing: border-box; }
-        .btn { padding: 10px 15px; background-color: #2196F3; color: white; border: none; cursor: pointer; }
-        .btn-back { background-color: #555; text-decoration: none; }
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        form div {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea,
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-back {
+            background-color: #555;
+            text-decoration: none;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Edit Product</h1>
         <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    <div>
-      {{ form.name.label_tag }} {{ form.name }}
-    </div>
-    <div>
-      {{ form.category.label_tag }} {{ form.category }}
-    </div>
-    <div>
-      {{ form.company.label_tag }} {{ form.company }}
-    </div>
-    <div>
-      {{ form.price.label_tag }} {{ form.price }}
-    </div>
-    <div>
-      {{ form.description.label_tag }} {{ form.description }}
-    </div>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div>
+                {{ form.name.label_tag }} {{ form.name }}
+            </div>
+            <div>
+                {{ form.category.label_tag }} {{ form.category }}
+            </div>
+            <div>
+                {{ form.company.label_tag }} {{ form.company }}
+            </div>
+            <div>
+                {{ form.price.label_tag }} {{ form.price }}
+            </div>
+            <div>
+                {{ form.description.label_tag }} {{ form.description }}
+            </div>
 
-    <div>
-      {{ form.image.label_tag }} {{ form.image }} <!--comment: optional primary image -->
-    </div>
+            <div>
+                {{ form.image.label_tag }} {{ form.image }} </div>
 
-    <div>
-      <label for="id_images">Add more images</label>
-      {{ form.images }} <!--comment: multiple file input -->
-    </div>
+            <div>
+                <label for="id_images">Add more images</label>
+                {{ form.images }} </div>
 
-    <hr>
+            <hr>
 
-    <h3>Existing Images</h3>
-    {% for img in images %}
-      <div style="display:inline-block; margin:8px;">
-        <img src="{{ img.image.url }}" width="120" height="120" alt="preview"> <!--comment: uniform preview without CSS -->
-        <div>
-          <label>
-            <input type="checkbox" name="design_image_ids" value="{{ img.id }}" {% if img.is_design %}checked{% endif %}>
-            Design <!--comment: tick to mark as design -->
-          </label>
-        </div>
-        <div>
-          <label>
-            <input type="checkbox" name="delete_image_ids" value="{{ img.id }}">
-            Delete <!--comment: mark this image for deletion -->
-          </label>
-        </div>
-      </div>
-    {% empty %}
-      <p>No images yet.</p>
-    {% endfor %}
+            <h3>Existing Images</h3>
+            {% for img in images %}
+            <div style="display:inline-block; margin:8px;">
+                <img src="{{ img.image.url }}" width="120" height="120" alt="preview">
+                <div>
+                    <label>
+                        <input type="checkbox" name="delete_image_ids" value="{{ img.id }}">
+                        Delete
+                    </label>
+                </div>
+            </div>
+            {% empty %}
+            <p>No images yet.</p>
+            {% endfor %}
 
-    <div style="margin-top:16px;">
-      <button type="submit" class="btn">Update Product</button>
-      <a href="{% url 'admin_dashboard' %}" >Back to Dashboard</a>
-    </div>
-  </form>
+            <div style="margin-top:16px;">
+                <button type="submit" class="btn">Update Product</button>
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-back">Back to Dashboard</a>
+            </div>
+        </form>
         <br>
-        
-            
+
+
     </div>
 </body>
 {% endblock %}

@@ -6,27 +6,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Product</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        .container { max-width: 600px; margin: auto; padding: 20px; }
-        form div { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; }
-        input[type="text"], textarea, input[type="number"] { width: 100%; padding: 8px; box-sizing: border-box; }
-        .btn { padding: 10px 15px; background-color: #2196F3; color: white; border: none; cursor: pointer; }
-        .btn-back { background-color: #555; text-decoration: none; }
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        form div {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea,
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-back {
+            background-color: #555;
+            text-decoration: none;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Add New Product</h1>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
-            
+
             <button type="submit" class="btn">Add Product</button>
             <a href="{% url 'admin_dashboard' %}" class="btn btn-back">Back to Dashboard</a>
         </form>
-       
-        
+
+
     </div>
 </body>
 {% endblock %}

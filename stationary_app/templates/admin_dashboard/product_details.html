@@ -3,43 +3,45 @@
 
 {% block content %}
 <div class="product-section">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-6">
-        <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
-          <div class="carousel-inner">
-            <div class="carousel-item active">
-              <img src="{{ product.image.url }}" class="d-block w-100" alt="{{ product.name }}">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="{{ product.image.url }}" class="d-block w-100" alt="{{ product.name }}">
+                        </div>
+                        {% for extra_image in product.images.all %}
+                        <div class="carousel-item">
+                            <img src="{{ extra_image.image.url }}" class="d-block w-100" alt="{{ product.name }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#productCarousel"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span></span>
+                    </button>
+                </div>
             </div>
-            {% for extra_image in product.images.all %}
-            <div class="carousel-item">
-              <img src="{{ extra_image.image.url }}" class="d-block w-100" alt="{{ product.name }}">
+            <div class="col-lg-6">
+                <div class="product-details-content">
+                    <h2 class="section-title mb-4">{{ product.name }}</h2>
+                    <p class="product-price">${{ product.price }}</p>
+                    <p class="product-description">{{ product.description }}</p>
+                    <div class="product-meta">
+                        <p><strong>Category:</strong> {{ product.category.name|default:"N/A" }}</p>
+                        <p><strong>Company:</strong> {{ product.company }}</p>
+                    </div>
+                    <a href="{% url 'shop' %}" class="btn btn-secondary mt-3">Back to Shop</a>
+                </div>
             </div>
-            {% endfor %}
-          </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span></span>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span></span>
-          </button>
         </div>
-      </div>
-      <div class="col-lg-6">
-        <div class="product-details-content">
-          <h2 class="section-title mb-4">{{ product.name }}</h2>
-          <p class="product-price">${{ product.price }}</p>
-          <p class="product-description">{{ product.description }}</p>
-          <div class="product-meta">
-            <p><strong>Category:</strong> {{ product.category.name|default:"N/A" }}</p>
-            <p><strong>Company:</strong> {{ product.company }}</p>
-          </div>
-          <a href="{% url 'shop' %}" class="btn btn-secondary mt-3">Back to Shop</a>
-        </div>
-      </div>
     </div>
-  </div>
 </div>
 {% endblock %}

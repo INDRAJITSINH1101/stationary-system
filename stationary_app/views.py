@@ -3,9 +3,11 @@ from .form import signupform,PasswordResetConfirmForm,PasswordResetForm,UserProf
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import UserProfile,Product,Category
+from .models import UserProfile,Product,Category,ProductImage
 from django.contrib.auth.models import User
 from django.db.models import Q # Import Q object for complex lookups
+from django.core.paginator import Paginator
+import os
 
 
 # Create your views here.
@@ -30,11 +32,21 @@ def shop_page(request, category_name=None):
     if category_name:
         category = get_object_or_404(Category, name=category_name)
         products = products.filter(category=category)
+        paginator = Paginator(products, 3)
+        page = request.GET.get('page')
+        paged_products = paginator.get_page(page)
+        product_count = products.count()
+    else:
+        paginator = Paginator(products, 3)
+        page = request.GET.get('page')  # Get the current page number from the URL query parameter 'page'
+        paged_products = paginator.get_page(page)
+        product_count = products.count() # Get the products for the requested page
 
     context = {
-        'products': products,
+        'products': paged_products,
         'categories': categories,
         'selected_category': selected_category,
+        'product_count' : product_count,
     }
     return render(request, 'shop.html', context)
 
@@ -182,15 +194,44 @@ def add_product(request):
 @login_required
 @user_passes_test(is_admin)
 def edit_product(request, pk):
-    product = Product.objects.get(pk=pk)
+    product = get_object_or_404(Product, pk=pk)
+    images = product.images.all() # Fetch all images related to the product
+    
     if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES, instance=product)
-        if form.is_valid():
-            form.save()
+        # Create form instances with POST data and files
+        product_form = ProductForm(request.POST, request.FILES, instance=product)
+        
+        # Handle the deletion of existing images
+        delete_image_ids = request.POST.getlist('delete_image_ids')
+        for image_id in delete_image_ids:
+            try:
+                # Find the image object by its ID and delete it
+                image_to_delete = ProductImage.objects.get(id=image_id)
+                image_to_delete.delete()
+            except ProductImage.DoesNotExist:
+                # Handle cases where the image might not exist
+                pass
+
+        # Handle new image uploads
+        if 'images' in request.FILES:
+            for file in request.FILES.getlist('images'):
+                ProductImage.objects.create(product=product, image=file)
+
+        # Save the main product form
+        if product_form.is_valid():
+            product_form.save()
             return redirect('admin_dashboard')
+            
     else:
-        form = ProductForm(instance=product)
-    return render(request, 'admin_dashboard/edit_product.html', {'form': form})
+        # For a GET request, initialize the forms
+        product_form = ProductForm(instance=product)
+        
+    context = {
+        'form': product_form,
+        'product': product,
+        'images': images, # Pass the fetched images to the template
+    }
+    return render(request, 'admin_dashboard/edit_product.html', context)
 
 @login_required
 @user_passes_test(is_admin)

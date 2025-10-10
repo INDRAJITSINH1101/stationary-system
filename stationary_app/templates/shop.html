@@ -2,6 +2,20 @@
 {% load static %}
 
 {% block content %}
+<style>
+    .img-wrap {
+        height: 250px; 
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .product-thumbnail {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; 
+    }
+</style>
 <div class="hero">
   <div class="container">
     <div class="row justify-content-between">
@@ -21,7 +35,7 @@
           <h2>Filter by Category</h2>
           <div class="mb-4">
             <label for="category-filter" class="form-label">Select a Category:</label>
-            <select class="form-select" id="category-filter" onchange="window.      location.href=this.value;">
+            <select class="form-select" id="category-filter" onchange="window.      location.href=this. value;">
               <option value="{% url 'shop' %}" {% if not selected_category %}selected{% endif %}>All</option>
               {% for category in categories %}
               <option value="{% url 'shop_by_category' category_name=category.name %}" {% if selected_category == category.name %}selected{% endif %}>{{ category.name }}
@@ -30,28 +44,70 @@
             </select>
           </div>
         </div>
+        <header class="border-bottom mb-4 pb-3">
+		<div class="form-inline">
+			<span class="mr-md-auto"><b>{{ product_count }}</b> Items found </span>
+			
+		</div>
+</header>
     </div>
+    
     <div class="row">
-      {% for product in products %}
-      <div class="col-12 col-md-4 col-lg-4 mb-5">
-        <a class="product-item" href="{% url 'product_details' pk=product.pk %}">
-          <div class="product-thumbnail-wrapper">
-            <img src="{{ product.image.url }}" class="img-fluid product-thumbnail">
-          </div>
-          <h3 class="product-title">{{ product.name }}</h3>
-          <h3 class="product-title">Company : {{ product.company }}</h3>
-          <strong class="product-price">{{ product.price }}</strong>
-          <span class="icon-cross">
-            <img src="{% static 'images/cross.svg' %}" class="img-fluid">
-          </span>
-        </a>
-      </div>
-      {% empty %}
-      <div class="col-12">
-          <p>No products available yet.</p>
+    {% for product in products %}
+    <div class="col-md-4">
+      <figure class="card card-product-grid">
+            <a href="{% url 'product_details' pk=product.pk %}" class="product-item">
+                <div class="img-wrap">
+                    <img src="{{ product.image.url }}" class="img-fluid product-thumbnail">
+                </div>
+            </a> 
+            <figcaption class="info-wrap">
+                <div class="fix-height">
+                    <h3 class="product-title">{{ product.name }}</h3>
+                    <h4 class="product-company">Company: {{ product.company }}</h4>
+                    <h4 class="product-price">{{ product.price }}</h4>
+                    <a href="{% url 'product_details' pk=product.pk %}" class="btn btn-block btn-primary">
+                        View Details
+                    </a>
+                </div>
+            </figcaption>
+      </figure>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info text-center" role="alert">
+            <h2 class="alert-heading">No Products Found </h2>
+        </div>
       </div>
       {% endfor %}
     </div>
+        <nav class="mt-4" aria-label="Page navigation sample">
+	  {% if products.has_other_pages %}
+    <ul class="pagination">
+		{% if products.has_previous %}
+    <li class="page-item  "><a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a></li>
+		{% else %}
+		<li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+		{% endif %}
+
+		{% for i in products.paginator.page_range %}
+			{% if products.number == i %}
+    		<li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+			{% else %}
+				<li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+			{% endif %}
+    {% endfor %}
+
+		{% if products.has_next %}
+    	<li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}">Next</a></li>
+		{% else %}
+			<li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+		{% endif %}
+    </ul>
+	  {% endif %}
+    </nav>
   </div>
+
+  
 </div>
 {% endblock %}

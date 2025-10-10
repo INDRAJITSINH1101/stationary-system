@@ -7,13 +7,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        .container { max-width: 1200px; margin: auto; padding: 20px; } 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Admin Dashboard</h1>
@@ -29,6 +51,7 @@
                     <th>Name</th>
                     <th>Category</th>
                     <th>Price</th>
+                    <th>Images Count</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -39,16 +62,21 @@
                     <td>{{ product.name }}</td>
                     <td>{{ product.category.name|default:"N/A" }}</td>
                     <td>${{ product.price }}</td>
+                    <td>{{ product.images.count }}</td>
                     <td>
-                        <a href="{% url 'edit_product' pk=product.pk %}" class="btn btn-primary btn-sm" style="background-color: #2196F3;">Edit</a>
-                        <a href="{% url 'delete_product' pk=product.pk %}" class="btn btn-danger btn-sm" style="background-color: #f44336;">Delete</a>
-                        <a href="{% url 'add_product_image' pk=product.pk %}" class="btn btn-success btn-sm" style="background-color: #4CAF50;">Add Image</a>
-                        <a href="{% url 'product_details' product.pk %}" class="btn btn-primary btn-sm" style="background-color: green">View</a>
+                        <a href="{% url 'edit_product' pk=product.pk %}" class="btn btn-primary btn-sm"
+                            style="background-color: #2196F3;">Edit</a>
+                        <a href="{% url 'delete_product' pk=product.pk %}" class="btn btn-danger btn-sm"
+                            style="background-color: #f44336;">Delete</a>
+                        <a href="{% url 'add_product_image' pk=product.pk %}" class="btn btn-success btn-sm"
+                            style="background-color: #4CAF50;">Add Image</a>
+                        <a href="{% url 'product_details' product.pk %}" class="btn btn-primary btn-sm"
+                            style="background-color: green">View</a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5">No products found.</td>
+                    <td colspan="6">No products found.</td>
                 </tr>
                 {% endfor %}
             </tbody>
