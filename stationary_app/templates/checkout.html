@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block content %}
-
     <div class="hero">
         <div class="container">
             <div class="row justify-content-between">
@@ -11,22 +10,15 @@
                         <h1>Checkout</h1>
                     </div>
                 </div>
-                <div class="col-lg-7">
-                </div>
+                <div class="col-lg-7"></div>
             </div>
         </div>
     </div>
+    
     <div class="untree_co-section">
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <div class="row mb-5">
-                        <div class="col-md-12">
-                            <div class="border p-4 rounded" role="alert">
-                                Returning customer? <a href="{% url 'signin' %}">Click here</a> to login
-                            </div>
-                        </div>
-                    </div>
                     <div class="p-3 p-lg-5 border bg-white">
                         <h3 class="h6 text-black text-uppercase mb-3">Billing Details</h3>
                         <div class="form-group row">
@@ -67,18 +59,25 @@
                         </div>
                     </div>
                 </div>
+                
                 <div class="col-md-6">
                     <div class="p-3 p-lg-5 border bg-white">
                         <h3 class="h6 text-black text-uppercase mb-3">Your Order</h3>
                         <ul class="list-unstyled mb-3">
-                            <li><a href="#">Product 1</a> <span>$49.00</span></li>
-                            <li><a href="#">Product 2</a> <span>$78.00</span></li>
-                            <li class="mb-3"><a href="#">Product 3</a> <span>$43.00</span></li>
-                            <li class="text-black font-weight-bold">Order Total <span>$170.00</span></li>
+                            {% for item in cart_items %}
+                                <li>
+                                    <a href="#">{{ item.product.name }} x {{ item.quantity }}</a>
+                                    <span>${{ item.sub_total }}</span>
+                                </li>
+                            {% endfor %}
+                            <li class="mb-3 text-black font-weight-bold">Order Subtotal <span>${{ total }}</span></li>
+                            <li class="mb-3 text-black font-weight-bold">Tax <span>${{ tax }}</span></li>
+                            <li class="text-black font-weight-bold">Order Total <span>${{ grand_total }}</span></li>
                         </ul>
                     </div>
                 </div>
             </div>
+            
             <div class="form-group">
                 <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location='{% url 'thankyou' %}'">Place Order</button>
             </div>

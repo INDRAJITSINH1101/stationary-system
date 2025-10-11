@@ -66,9 +66,14 @@
                     <h3 class="product-title">{{ product.name }}</h3>
                     <h4 class="product-company">Company: {{ product.company }}</h4>
                     <h4 class="product-price">{{ product.price }}</h4>
-                    <a href="{% url 'product_details' pk=product.pk %}" class="btn btn-block btn-primary">
+                    
+                    <form action="{% url 'add_cart' product.id %}" method="post">
+                      <a href="{% url 'product_details' pk=product.pk %}" class="btn btn-block btn-secondary">
                         View Details
                     </a>
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-block btn-primary">Add to Cart</button>
+                    </form>
                 </div>
             </figcaption>
       </figure>
@@ -83,7 +88,7 @@
     </div>
         <nav class="mt-4" aria-label="Page navigation sample">
 	  {% if products.has_other_pages %}
-    <ul class="pagination">
+    <ul class="pagination justify-content-center">
 		{% if products.has_previous %}
     <li class="page-item  "><a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a></li>
 		{% else %}

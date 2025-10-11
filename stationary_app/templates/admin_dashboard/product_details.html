@@ -38,7 +38,12 @@
                         <p><strong>Category:</strong> {{ product.category.name|default:"N/A" }}</p>
                         <p><strong>Company:</strong> {{ product.company }}</p>
                     </div>
-                    <a href="{% url 'shop' %}" class="btn btn-secondary mt-3">Back to Shop</a>
+                    
+                    <form action="{% url 'add_cart' product.id %}" method="post">
+                        <a href="{% url 'shop' %}" class="btn btn-secondary ">Back to Shop</a>
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-block btn-primary">Add to Cart</button>
+                    </form>
                 </div>
             </div>
         </div>
