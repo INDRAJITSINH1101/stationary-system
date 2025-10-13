@@ -21,21 +21,16 @@ class Product(models.Model):
     image = models.ImageField(upload_to="products/")
 
     def cgst_amount(self):
-        """Half of GST"""
         return (self.price * (self.gst_rate / 2)) / 100
 
     def sgst_amount(self):
-        """Half of GST"""
         return (self.price * (self.gst_rate / 2)) / 100
 
     def total_gst(self):
-        """Full GST"""
         return (self.price * self.gst_rate) / 100
 
     def total_price(self):
-        """Price including GST"""
         return self.price + self.total_gst()
-   
 
     def __str__(self):
         return self.name

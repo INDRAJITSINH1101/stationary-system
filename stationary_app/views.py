@@ -64,55 +64,6 @@ def services_page(request):
 def contact_page(request):
     return render(request, 'contact.html')
 
-def cart_page(request):
-    return render(request, 'cart.html')
-
-from decimal import Decimal
-
-@login_required
-def checkout_page(request):
-    total = Decimal('0.00')
-    cgst_total = Decimal('0.00')
-    sgst_total = Decimal('0.00')
-    gst_total = Decimal('0.00')
-    grand_total = Decimal('0.00')
-    cart_items = None
-
-    try:
-        cart = Cart.objects.get(cart_id=_cart_id(request))
-        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
-
-        for item in cart_items:
-            product_price = item.product.price * item.quantity
-            total += product_price
-
-            # GST breakdown
-            gst_rate = item.product.gst_rate
-            cgst = (product_price * (gst_rate / 2)) / 100
-            sgst = (product_price * (gst_rate / 2)) / 100
-            total_gst = cgst + sgst
-
-            cgst_total += cgst
-            sgst_total += sgst
-            gst_total += total_gst
-
-        grand_total = total + gst_total
-
-    except Cart.DoesNotExist:
-        cart_items = []
-
-    context = {
-        'cart_items': cart_items,
-        'total': round(total, 2),
-        'cgst_total': round(cgst_total, 2),
-        'sgst_total': round(sgst_total, 2),
-        'gst_total': round(gst_total, 2),
-        'grand_total': round(grand_total, 2),
-    }
-
-    return render(request, 'checkout.html', context)
-
-
 def thankyou_page(request):
     return render(request, 'thankyou.html')
 
@@ -253,10 +204,8 @@ def edit_product(request, pk):
                 image_to_delete = ProductImage.objects.get(id=image_id)
                 image_to_delete.delete()
             except ProductImage.DoesNotExist:
-                # Handle cases where the image might not exist
                 pass
 
-        # Handle new image uploads
         if 'images' in request.FILES:
             for file in request.FILES.getlist('images'):
                 ProductImage.objects.create(product=product, image=file)
@@ -355,7 +304,6 @@ def _cart_id(request):
         cart = request.session.create()
     return cart
 
-# Add an item to the cart
 def add_cart(request, product_id):
     product = Product.objects.get(id=product_id)
     try:
@@ -376,7 +324,6 @@ def add_cart(request, product_id):
         )
     return redirect('cart')
 
-# Remove an item from the cart (decrease quantity)
 def remove_cart(request, product_id):
     cart = Cart.objects.get(cart_id=_cart_id(request))
     product = get_object_or_404(Product, id=product_id)
@@ -389,7 +336,6 @@ def remove_cart(request, product_id):
         cart_item.delete()
     return redirect('cart')
 
-# Remove a specific item from the cart
 def remove_cart_item(request, product_id):
     cart = Cart.objects.get(cart_id=_cart_id(request))
     product = get_object_or_404(Product, id=product_id)
@@ -397,7 +343,6 @@ def remove_cart_item(request, product_id):
     cart_item.delete()
     return redirect('cart')
 
-# Display the cart page
 def cart_page(request):
     total = Decimal('0.00')
     cgst_total = Decimal('0.00')
@@ -438,3 +383,46 @@ def cart_page(request):
         'grand_total': round(grand_total, 2),
     }
     return render(request, 'cart.html', context)
+
+@login_required
+def checkout_page(request):
+    total = Decimal('0.00')
+    cgst_total = Decimal('0.00')
+    sgst_total = Decimal('0.00')
+    gst_total = Decimal('0.00')
+    grand_total = Decimal('0.00')
+    cart_items = None
+
+    try:
+        cart = Cart.objects.get(cart_id=_cart_id(request))
+        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+
+        for item in cart_items:
+            product_price = item.product.price * item.quantity
+            total += product_price
+
+            # GST 
+            gst_rate = item.product.gst_rate
+            cgst = (product_price * (gst_rate / 2)) / 100
+            sgst = (product_price * (gst_rate / 2)) / 100
+            total_gst = cgst + sgst
+
+            cgst_total += cgst
+            sgst_total += sgst
+            gst_total += total_gst
+
+        grand_total = total + gst_total
+
+    except Cart.DoesNotExist:
+        cart_items = []
+
+    context = {
+        'cart_items': cart_items,
+        'total': round(total, 2),
+        'cgst_total': round(cgst_total, 2),
+        'sgst_total': round(sgst_total, 2),
+        'gst_total': round(gst_total, 2),
+        'grand_total': round(grand_total, 2),
+    }
+
+    return render(request, 'checkout.html', context)
