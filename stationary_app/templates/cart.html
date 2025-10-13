@@ -2,112 +2,113 @@
 {% load static %}
 
 {% block content %}
-    <div class="hero">
-        <div class="container">
-            <div class="row justify-content-between">
-                <div class="col-lg-5">
-                    <div class="intro-excerpt">
-                        <h1>Cart</h1>
-                    </div>
+<div class="hero">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-lg-5">
+                <div class="intro-excerpt">
+                    <h1>Cart</h1>
                 </div>
-                <div class="col-lg-7"></div>
             </div>
+            <div class="col-lg-7"></div>
         </div>
     </div>
-    
-    <div class="untree_co-section before-footer-section">
-        <div class="container">
-            <div class="row mb-5">
-                <div class="col-md-12">
-                    <div class="site-blocks-table">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th class="product-thumbnail">Image</th>
-                                    <th class="product-name">Product</th>
-                                    <th class="product-price">Price</th>
-                                    <th class="product-quantity">Quantity</th>
-                                    <th class="product-total">Total</th>
-                                    <th class="product-remove">Remove</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% if cart_items %}
-                                    {% for cart_item in cart_items %}
-                                        <tr>
-                                            <td class="product-thumbnail">
-                                                <img src="{{ cart_item.product.image.url }}" alt="Image" class="img-fluid">
-                                            </td>
-                                            <td class="product-name">
-                                                <h2 class="h5 text-black">{{ cart_item.product.name }}</h2>
-                                            </td>
-                                            <td>${{ cart_item.product.price }}</td>
-                                            <td>
-                                                <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
-                                                    <a href="{% url 'remove_cart' cart_item.product.id %}" class="btn btn-outline-black decrease" type="button">&minus;</a>
-                                                    <input type="text" class="form-control text-center quantity-amount" value="{{ cart_item.quantity }}" readonly>
-                                                    <a href="{% url 'add_cart' cart_item.product.id %}" class="btn btn-outline-black increase" type="button">&plus;</a>
-                                                </div>
-                                            </td>
-                                            <td>${{ cart_item.sub_total }}</td>
-                                            <td><a href="{% url 'remove_cart_item' cart_item.product.id %}" class="btn btn-black btn-sm">X</a></td>
-                                        </tr>
-                                    {% endfor %}
-                                {% else %}
+</div>
+
+<div class="untree_co-section before-footer-section">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-md-12">
+                <div class="site-blocks-table">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="product-thumbnail">Image</th>
+                                <th class="product-name">Product</th>
+                                <th class="product-price">Price</th>
+                                <th class="product-quantity">Quantity</th>
+                                <th class="product-total">GST Details</th>
+                                <th class="product-total">Total (incl. GST)</th>
+                                <th class="product-remove">Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if cart_items %}
+                                {% for cart_item in cart_items %}
+                                    {% with product=cart_item.product %}
                                     <tr>
-                                        <td colspan="6" class="text-center">Your cart is empty.</td>
+                                        <td class="product-thumbnail">
+                                            <img src="{{ product.image.url }}" alt="Image" class="img-fluid">
+                                        </td>
+                                        <td class="product-name">
+                                            <h2 class="h5 text-black">{{ product.name }}</h2>
+                                            <p class="text-muted">{{ product.company }}</p>
+                                        </td>
+                                        <td>₹{{ product.price }}</td>
+                                        <td>
+                                            <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
+                                                <a href="{% url 'remove_cart' product.id %}" class="btn btn-outline-black decrease" type="button">&minus;</a>
+                                                <input type="text" class="form-control text-center quantity-amount" value="{{ cart_item.quantity }}" readonly>
+                                                <a href="{% url 'add_cart' product.id %}" class="btn btn-outline-black increase" type="button">&plus;</a>
+                                            </div>
+                                        </td>
+
+                                        <!-- GST Breakdown -->
+                                        <td>
+                                            {% with total_price=product.price|floatformat:2|floatformat:0 %}
+                                            <p>GST Rate: {{ product.gst_rate }}%</p>
+                                            <p>CGST: ₹{{ product.cgst_amount|floatformat:2 }}</p>
+                                            <p>SGST: ₹{{ product.sgst_amount|floatformat:2 }}</p>
+                                            {% endwith %}
+                                        </td>
+
+                                        <!-- Total (incl. GST) -->
+                                        <td>₹{{ product.total_price|floatformat:2 }}</td>
+
+                                        <td><a href="{% url 'remove_cart_item' product.id %}" class="btn btn-danger btn-sm"
+                                        style="background-color: #f44336;">Remove</a></td>
                                     </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
+                                    {% endwith %}
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center">Your cart is empty.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Totals Section -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row mb-5">
+                    <div class="col-md-6">
+                        <a href="{% url 'shop' %}" class="btn btn-outline-black btn-sm btn-block">Continue Shopping</a>
                     </div>
                 </div>
             </div>
-            
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="row mb-5">
-                        <div class="col-md-6">
-                            <a href="{% url 'shop' %}" class="btn btn-outline-black btn-sm btn-block">Continue Shopping</a>
+
+            <div class="col-md-6 pl-5">
+                <div class="row justify-content-end">
+                    <div class="col-md-7">
+                        <div class="row">
+                            <div class="col-md-12 text-right border-bottom mb-5">
+                                <h3 class="text-black h4 text-uppercase">Cart Totals</h3>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-md-6 pl-5">
-                    <div class="row justify-content-end">
-                        <div class="col-md-7">
-                            <div class="row">
-                                <div class="col-md-12 text-right border-bottom mb-5">
-                                    <h3 class="text-black h4 text-uppercase">Cart Totals</h3>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <span class="text-black">Subtotal</span>
-                                </div>
-                                <div class="col-md-6 text-right">
-                                    <strong class="text-black">${{ total }}</strong>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <span class="text-black">Tax (2%)</span>
-                                </div>
-                                <div class="col-md-6 text-right">
-                                    <strong class="text-black">${{ tax }}</strong>
-                                </div>
-                            </div>
-                            <div class="row mb-5">
-                                <div class="col-md-6">
-                                    <span class="text-black">Total</span>
-                                </div>
-                                <div class="col-md-6 text-right">
-                                    <strong class="text-black">${{ grand_total }}</strong>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location='{% url 'checkout' %}'">Proceed To Checkout</button>
-                                </div>
+
+                        <p>Subtotal: ₹{{ total }}</p>
+                        <p>CGST Total: ₹{{ cgst_total }}</p>
+                        <p>SGST Total: ₹{{ sgst_total }}</p>
+                        <p><strong>Total GST: ₹{{ gst_total }}</strong></p>
+                        <p><strong>Grand Total: ₹{{ grand_total }}</strong></p>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location='{% url 'checkout' %}'">Proceed To Checkout</button>
                             </div>
                         </div>
                     </div>
@@ -115,4 +116,5 @@
             </div>
         </div>
     </div>
+</div>
 {% endblock %}

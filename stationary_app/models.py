@@ -16,8 +16,25 @@ class Product(models.Model):
     category = models.ForeignKey("Category",on_delete=models.CASCADE, null=True,blank=True)
     company = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    gst_rate = models.DecimalField(max_digits=5, decimal_places=2, default=18.00, help_text="GST rate in %")
     description = models.TextField()
     image = models.ImageField(upload_to="products/")
+
+    def cgst_amount(self):
+        """Half of GST"""
+        return (self.price * (self.gst_rate / 2)) / 100
+
+    def sgst_amount(self):
+        """Half of GST"""
+        return (self.price * (self.gst_rate / 2)) / 100
+
+    def total_gst(self):
+        """Full GST"""
+        return (self.price * self.gst_rate) / 100
+
+    def total_price(self):
+        """Price including GST"""
+        return self.price + self.total_gst()
    
 
     def __str__(self):

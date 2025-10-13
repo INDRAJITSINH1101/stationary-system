@@ -87,7 +87,7 @@ class UserProfileUpdateForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name','category','company','price','description','image']
+        fields = ['name','category','company','price','gst_rate', 'description','image']
 
 class CategoryForm(forms.ModelForm):
     class Meta:

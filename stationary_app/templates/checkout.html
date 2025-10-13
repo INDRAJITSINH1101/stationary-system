@@ -2,85 +2,102 @@
 {% load static %}
 
 {% block content %}
-    <div class="hero">
-        <div class="container">
-            <div class="row justify-content-between">
-                <div class="col-lg-5">
-                    <div class="intro-excerpt">
-                        <h1>Checkout</h1>
-                    </div>
+<div class="hero">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-lg-5">
+                <div class="intro-excerpt">
+                    <h1>Checkout</h1>
                 </div>
-                <div class="col-lg-7"></div>
             </div>
+            <div class="col-lg-7"></div>
         </div>
     </div>
-    
-    <div class="untree_co-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="p-3 p-lg-5 border bg-white">
-                        <h3 class="h6 text-black text-uppercase mb-3">Billing Details</h3>
-                        <div class="form-group row">
-                            <div class="col-md-6">
-                                <label for="c_fname" class="text-black">First Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="c_fname" name="c_fname">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="c_lname" class="text-black">Last Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="c_lname" name="c_lname">
-                            </div>
+</div>
+
+<div class="untree_co-section">
+    <div class="container">
+        <div class="row">
+            <!-- Billing Details -->
+            <div class="col-md-6">
+                <div class="p-3 p-lg-5 border bg-white">
+                    <h3 class="h6 text-black text-uppercase mb-3">Billing Details</h3>
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <label for="c_fname" class="text-black">First Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="c_fname" name="c_fname">
                         </div>
-                        <div class="form-group row">
-                            <div class="col-md-12">
-                                <label for="c_address" class="text-black">Address <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="c_address" name="c_address" placeholder="Street address">
-                            </div>
+                        <div class="col-md-6">
+                            <label for="c_lname" class="text-black">Last Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="c_lname" name="c_lname">
                         </div>
-                        <div class="form-group row">
-                            <div class="col-md-6">
-                                <label for="c_state_country" class="text-black">State / Country <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="c_state_country" name="c_state_country">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="c_postal_zip" class="text-black">Postal / Zip <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="c_postal_zip" name="c_postal_zip">
-                            </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <label for="c_address" class="text-black">Address <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="c_address" name="c_address" placeholder="Street address">
                         </div>
-                        <div class="form-group row mb-5">
-                            <div class="col-md-6">
-                                <label for="c_email_address" class="text-black">Email Address <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="c_email_address" name="c_email_address">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="c_phone" class="text-black">Phone <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="c_phone" name="c_phone" placeholder="Phone Number">
-                            </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <label for="c_state_country" class="text-black">State / Country <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="c_state_country" name="c_state_country">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="c_postal_zip" class="text-black">Postal / Zip <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="c_postal_zip" name="c_postal_zip">
+                        </div>
+                    </div>
+                    <div class="form-group row mb-5">
+                        <div class="col-md-6">
+                            <label for="c_email_address" class="text-black">Email Address <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="c_email_address" name="c_email_address">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="c_phone" class="text-black">Phone <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="c_phone" name="c_phone" placeholder="Phone Number">
                         </div>
                     </div>
                 </div>
-                
-                <div class="col-md-6">
-                    <div class="p-3 p-lg-5 border bg-white">
-                        <h3 class="h6 text-black text-uppercase mb-3">Your Order</h3>
-                        <ul class="list-unstyled mb-3">
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-md-6">
+                <div class="p-3 p-lg-5 border bg-white">
+                    <h3 class="h6 text-black text-uppercase mb-3">Your Order</h3>
+
+                    <ul class="list-unstyled mb-3">
+                        {% if cart_items %}
                             {% for item in cart_items %}
-                                <li>
-                                    <a href="#">{{ item.product.name }} x {{ item.quantity }}</a>
-                                    <span>${{ item.sub_total }}</span>
+                                <li class="mb-3">
+                                    <strong>{{ item.product.name }}</strong> × {{ item.quantity }} <br>
+                                    <small>Price: ₹{{ item.product.price }}</small><br>
+                                    <small>GST ({{ item.product.gst_rate }}%): ₹{{ item.product.total_gst|floatformat:2 }}</small><br>
+                                    <small>CGST: ₹{{ item.product.cgst_amount|floatformat:2 }}</small><br>
+                                    <small>SGST: ₹{{ item.product.sgst_amount|floatformat:2 }}</small><br>
+                                    <strong>Total (incl. GST): ₹{{ item.product.total_price|floatformat:2 }}</strong>
                                 </li>
+                                <hr>
                             {% endfor %}
-                            <li class="mb-3 text-black font-weight-bold">Order Subtotal <span>${{ total }}</span></li>
-                            <li class="mb-3 text-black font-weight-bold">Tax <span>${{ tax }}</span></li>
-                            <li class="text-black font-weight-bold">Order Total <span>${{ grand_total }}</span></li>
-                        </ul>
+                        {% else %}
+                            <p>Your cart is empty.</p>
+                        {% endif %}
+                    </ul>
+
+                    <div class="border-top pt-3">
+                        <p>Subtotal: ₹{{ total }}</p>
+                        <p>CGST Total: ₹{{ cgst_total }}</p>
+                        <p>SGST Total: ₹{{ sgst_total }}</p>
+                        <p><strong>Total GST: ₹{{ gst_total }}</strong></p>
+                        <p><strong>Grand Total: ₹{{ grand_total }}</strong></p>
                     </div>
                 </div>
             </div>
-            
-            <div class="form-group">
-                <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location='{% url 'thankyou' %}'">Place Order</button>
-            </div>
+        </div>
+
+        <div class="form-group mt-4">
+            <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location='{% url 'thankyou' %}'">Place Order</button>
         </div>
     </div>
+</div>
 {% endblock %}

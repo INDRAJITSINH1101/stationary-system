@@ -357,24 +357,41 @@ def remove_cart_item(request, product_id):
 # Display the cart page
 def cart_page(request):
     total = Decimal('0.00')
-    tax = Decimal('0.00')
+    cgst_total = Decimal('0.00')
+    sgst_total = Decimal('0.00')
+    gst_total = Decimal('0.00')
     grand_total = Decimal('0.00')
     cart_items = None
-    
+
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
         cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+
         for cart_item in cart_items:
-            total += (cart_item.product.price * cart_item.quantity)
-        tax = (2 * total) / 100
-        grand_total = total + tax
+            product_price = cart_item.product.price * cart_item.quantity
+            total += product_price
+
+            # Calculate GST per product
+            gst_rate = cart_item.product.gst_rate
+            cgst = (product_price * (gst_rate / 2)) / 100
+            sgst = (product_price * (gst_rate / 2)) / 100
+            total_gst = cgst + sgst
+
+            cgst_total += cgst
+            sgst_total += sgst
+            gst_total += total_gst
+
+        grand_total = total + gst_total
+
     except Cart.DoesNotExist:
-        pass
-        
+        cart_items = []
+
     context = {
-        'total': total,
         'cart_items': cart_items,
-        'tax': tax,
-        'grand_total': grand_total,
+        'total': round(total, 2),
+        'cgst_total': round(cgst_total, 2),
+        'sgst_total': round(sgst_total, 2),
+        'gst_total': round(gst_total, 2),
+        'grand_total': round(grand_total, 2),
     }
     return render(request, 'cart.html', context)
