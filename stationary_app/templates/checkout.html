@@ -96,8 +96,50 @@
         </div>
 
         <div class="form-group mt-4">
-            <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location='{% url 'thankyou' %}'">Place Order</button>
+            <button class="btn btn-black btn-lg py-3 btn-block" id="rzp-button1">Place Order</button>
         </div>
     </div>
 </div>
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {
+        "key": "{{ razorpay_merchant_key }}", // Enter the Key ID generated from the Razorpay Dashboard
+        "amount": "{{ razorpay_amount }}", // Amount is in paise
+        "currency": "{{ currency }}",
+        "name": "Your E-commerce Store",
+        "description": "Purchase from your store",
+        "order_id": "{{ razorpay_order_id }}", // This is the Order ID created on your server
+        "handler": function (response){
+            // This function is called after a successful payment
+            var form = document.createElement("form");
+            form.method = "POST";
+            form.action = "{% url 'paymenthandler' %}";
+            form.innerHTML = `
+                <input type="hidden" name="razorpay_payment_id" value="${response.razorpay_payment_id}">
+                <input type="hidden" name="razorpay_order_id" value="${response.razorpay_order_id}">
+                <input type="hidden" name="razorpay_signature" value="${response.razorpay_signature}">
+                {% csrf_token %}
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        },
+        "modal": {
+            "ondismiss": function(){
+                console.log('Checkout form was closed by the user');
+            }
+        },
+        "theme": {
+            "color": "#3399cc"
+        }
+    };
+    var rzp1 = new Razorpay(options);
+    document.getElementById('rzp-button1').onclick = function(e){
+        rzp1.open();
+        e.preventDefault();
+    }
+</script>
+
+
 {% endblock %}

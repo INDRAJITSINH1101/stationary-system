@@ -10,6 +10,11 @@ from django.core.paginator import Paginator
 from decimal import Decimal
 import os
 
+import razorpay
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponseBadRequest
+
 
 # Create your views here.
 def home_page(request):
@@ -384,6 +389,8 @@ def cart_page(request):
     }
     return render(request, 'cart.html', context)
 
+razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
 @login_required
 def checkout_page(request):
     total = Decimal('0.00')
@@ -416,6 +423,15 @@ def checkout_page(request):
     except Cart.DoesNotExist:
         cart_items = []
 
+    currency = 'INR'
+    amount = int(grand_total * 100)  
+
+    razorpay_order = razorpay_client.order.create(dict(
+        amount=amount, 
+        currency=currency,
+        payment_capture='1' 
+    ))
+
     context = {
         'cart_items': cart_items,
         'total': round(total, 2),
@@ -423,6 +439,38 @@ def checkout_page(request):
         'sgst_total': round(sgst_total, 2),
         'gst_total': round(gst_total, 2),
         'grand_total': round(grand_total, 2),
+        'razorpay_order_id': razorpay_order['id'],
+        'razorpay_merchant_key': settings.RAZORPAY_KEY_ID,
+        'razorpay_amount': amount,
+        'currency': currency,
     }
 
     return render(request, 'checkout.html', context)
+
+@csrf_exempt
+def paymenthandler(request):
+    if request.method == "POST":
+        try:
+            payment_id = request.POST.get('razorpay_payment_id', '')
+            razorpay_order_id = request.POST.get('razorpay_order_id', '')
+            signature = request.POST.get('razorpay_signature', '')
+            
+            params_dict = {
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_payment_id': payment_id,
+                'razorpay_signature': signature
+            }
+            
+            # Verify the payment signature
+            result = razorpay_client.utility.verify_payment_signature(params_dict)
+            
+            if result is not None:
+                # If signature is verified, you can now process the order
+                # For example, you can save the payment details in your database
+                return render(request, "thankyou.html")
+            else:
+                return HttpResponseBadRequest("Payment verification failed")
+        except:
+            return HttpResponseBadRequest()
+    else:
+        return HttpResponseBadRequest()
