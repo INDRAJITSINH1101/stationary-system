@@ -3,7 +3,7 @@ from .form import signupform,PasswordResetConfirmForm,PasswordResetForm,UserProf
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import UserProfile,Product,Category,ProductImage,Cart,CartItem
+from .models import UserProfile,Product,Category,ProductImage,Cart,CartItem,Order,OrderItem
 from django.contrib.auth.models import User
 from django.db.models import Q # Import Q object for complex lookups
 from django.core.paginator import Paginator
@@ -14,6 +14,9 @@ import razorpay
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseBadRequest
+
+
+
 
 
 # Create your views here.
@@ -69,8 +72,10 @@ def services_page(request):
 def contact_page(request):
     return render(request, 'contact.html')
 
-def thankyou_page(request):
-    return render(request, 'thankyou.html')
+def thankyou_page(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    context = {'order': order}
+    return render(request, 'thankyou.html', context)
 
 def blog_page(request):
     return render(request, 'blog.html')
@@ -408,7 +413,6 @@ def checkout_page(request):
             product_price = item.product.price * item.quantity
             total += product_price
 
-            # GST 
             gst_rate = item.product.gst_rate
             cgst = (product_price * (gst_rate / 2)) / 100
             sgst = (product_price * (gst_rate / 2)) / 100
@@ -460,17 +464,106 @@ def paymenthandler(request):
                 'razorpay_payment_id': payment_id,
                 'razorpay_signature': signature
             }
-            
-            # Verify the payment signature
+
             result = razorpay_client.utility.verify_payment_signature(params_dict)
             
             if result is not None:
-                # If signature is verified, you can now process the order
-                # For example, you can save the payment details in your database
-                return render(request, "thankyou.html")
+                cart = Cart.objects.get(cart_id=_cart_id(request))
+                cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+
+                grand_total = Decimal('0.00')
+                for item in cart_items:
+                    product_price = item.product.price * item.quantity
+                    total_gst = (product_price * item.product.gst_rate) / 100
+                    grand_total += product_price + total_gst
+
+                # Create the Order
+                order = Order.objects.create(
+                    user=request.user,
+                    full_name=request.user.username, # Should be replaced with form data
+                    address=request.user.userprofile.address, # Should be replaced with form data
+                    city="City", # Placeholder
+                    postal_code="12345", # Placeholder
+                    email=request.user.email,
+                    phone_number=request.user.userprofile.mobile_number,
+                    total_amount=grand_total,
+                    payment_method='Online',
+                    payment_id=payment_id,
+                    is_paid=True,
+                )
+
+                # Move cart items to order items
+                for cart_item in cart_items:
+                    OrderItem.objects.create(
+                        order=order,
+                        product=cart_item.product,
+                        quantity=cart_item.quantity,
+                        price=cart_item.product.price,
+                    )
+                
+                cart_items.delete()
+                
+                return redirect('thankyou', order_id=order.id)
             else:
                 return HttpResponseBadRequest("Payment verification failed")
-        except:
-            return HttpResponseBadRequest()
+        except Exception as e:
+            return HttpResponseBadRequest(f"Error: {e}")
     else:
         return HttpResponseBadRequest()
+
+    
+def place_cod_order(request):
+    if request.method == 'POST':
+        user = request.user
+        cart = Cart.objects.get(cart_id=_cart_id(request))
+        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+
+        if not cart_items.exists():
+            return redirect('shop')
+
+        # Get billing details from the POST data
+        full_name = f"{request.POST.get('c_fname')} {request.POST.get('c_lname')}"
+        address = request.POST.get('c_address')
+        city = request.POST.get('c_state_country') # Assuming this field is used for city/state
+        postal_code = request.POST.get('c_postal_zip')
+        email = request.POST.get('c_email_address')
+        phone_number = request.POST.get('c_phone')
+
+        grand_total = Decimal('0.00')
+        for item in cart_items:
+            product_price = item.product.price * item.quantity
+            total_gst = (product_price * item.product.gst_rate) / 100
+            grand_total += product_price + total_gst
+
+        order = Order.objects.create(
+            user=user,
+            full_name=full_name,
+            address=address,
+            city=city,
+            postal_code=postal_code,
+            email=email,
+            phone_number=phone_number,
+            total_amount=grand_total,
+            payment_method='COD',
+            is_paid=True,
+        )
+
+        for cart_item in cart_items:
+            OrderItem.objects.create(
+                order=order,
+                product=cart_item.product,
+                quantity=cart_item.quantity,
+                price=cart_item.product.price,
+            )
+        cart_items.delete()
+
+        return redirect('thankyou', order_id=order.id)
+    return redirect('checkout')
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_orders(request):
+    orders = Order.objects.all().order_by('-created_at')
+    context = {'orders': orders}
+    return render(request, 'admin_dashboard/admin_orders.html', context)

@@ -17,102 +17,115 @@
 
 <div class="untree_co-section">
     <div class="container">
-        <div class="row">
-            <!-- Billing Details -->
-            <div class="col-md-6">
-                <div class="p-3 p-lg-5 border bg-white">
-                    <h3 class="h6 text-black text-uppercase mb-3">Billing Details</h3>
-                    <div class="form-group row">
-                        <div class="col-md-6">
-                            <label for="c_fname" class="text-black">First Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="c_fname" name="c_fname">
+        <form id="checkout_form" method="post" action="{% url 'place_cod_order' %}">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="p-3 p-lg-5 border bg-white">
+                        <h3 class="h6 text-black text-uppercase mb-3">Billing Details</h3>
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="c_fname" class="text-black">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="c_fname" name="c_fname">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="c_lname" class="text-black">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="c_lname" name="c_lname">
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label for="c_lname" class="text-black">Last Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="c_lname" name="c_lname">
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label for="c_address" class="text-black">Address <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="c_address" name="c_address" placeholder="Street address">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <label for="c_state_country" class="text-black">State / Country <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="c_state_country" name="c_state_country">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="c_postal_zip" class="text-black">Postal / Zip <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="c_postal_zip" name="c_postal_zip">
+                            </div>
+                        </div>
+                        <div class="form-group row mb-5">
+                            <div class="col-md-6">
+                                <label for="c_email_address" class="text-black">Email Address <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="c_email_address" name="c_email_address">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="c_phone" class="text-black">Phone <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="c_phone" name="c_phone" placeholder="Phone Number">
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <div class="col-md-12">
-                            <label for="c_address" class="text-black">Address <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="c_address" name="c_address" placeholder="Street address">
+                </div>
+
+                <div class="col-md-6">
+                    <div class="p-3 p-lg-5 border bg-white">
+                        <h3 class="h6 text-black text-uppercase mb-3">Your Order</h3>
+                        <ul class="list-unstyled mb-3">
+                            {% if cart_items %}
+                                {% for item in cart_items %}
+                                    <li class="mb-3">
+                                        <strong>{{ item.product.name }}</strong> × {{ item.quantity }} <br>
+                                        <small>Price: ₹{{ item.product.price }}</small><br>
+                                        <small>GST ({{ item.product.gst_rate }}%): ₹{{ item.product.total_gst|floatformat:2 }}</small><br>
+                                        <small>CGST: ₹{{ item.product.cgst_amount|floatformat:2 }}</small><br>
+                                        <small>SGST: ₹{{ item.product.sgst_amount|floatformat:2 }}</small><br>
+                                        <strong>Total (incl. GST): ₹{{ item.product.total_price|floatformat:2 }}</strong>
+                                    </li>
+                                    <hr>
+                                {% endfor %}
+                            {% else %}
+                                <p>Your cart is empty.</p>
+                            {% endif %}
+                        </ul>
+                        <div class="border-top pt-3">
+                            <p>Subtotal: ₹{{ total }}</p>
+                            <p>CGST Total: ₹{{ cgst_total }}</p>
+                            <p>SGST Total: ₹{{ sgst_total }}</p>
+                            <p><strong>Total GST: ₹{{ gst_total }}</strong></p>
+                            <p><strong>Grand Total: ₹{{ grand_total }}</strong></p>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <div class="col-md-6">
-                            <label for="c_state_country" class="text-black">State / Country <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="c_state_country" name="c_state_country">
+                    
+                    <div class="p-3 p-lg-5 border bg-white mt-4">
+                        <h3 class="h6 text-black text-uppercase mb-3">Payment Method</h3>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="online_payment" value="online" checked>
+                            <label class="form-check-label" for="online_payment">
+                                Online Payment (Razorpay)
+                            </label>
                         </div>
-                        <div class="col-md-6">
-                            <label for="c_postal_zip" class="text-black">Postal / Zip <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="c_postal_zip" name="c_postal_zip">
-                        </div>
-                    </div>
-                    <div class="form-group row mb-5">
-                        <div class="col-md-6">
-                            <label for="c_email_address" class="text-black">Email Address <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="c_email_address" name="c_email_address">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="c_phone" class="text-black">Phone <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="c_phone" name="c_phone" placeholder="Phone Number">
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="radio" name="payment_method" id="cash_on_delivery" value="cod">
+                            <label class="form-check-label" for="cash_on_delivery">
+                                Cash on Delivery
+                            </label>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Order Summary -->
-            <div class="col-md-6">
-                <div class="p-3 p-lg-5 border bg-white">
-                    <h3 class="h6 text-black text-uppercase mb-3">Your Order</h3>
-
-                    <ul class="list-unstyled mb-3">
-                        {% if cart_items %}
-                            {% for item in cart_items %}
-                                <li class="mb-3">
-                                    <strong>{{ item.product.name }}</strong> × {{ item.quantity }} <br>
-                                    <small>Price: ₹{{ item.product.price }}</small><br>
-                                    <small>GST ({{ item.product.gst_rate }}%): ₹{{ item.product.total_gst|floatformat:2 }}</small><br>
-                                    <small>CGST: ₹{{ item.product.cgst_amount|floatformat:2 }}</small><br>
-                                    <small>SGST: ₹{{ item.product.sgst_amount|floatformat:2 }}</small><br>
-                                    <strong>Total (incl. GST): ₹{{ item.product.total_price|floatformat:2 }}</strong>
-                                </li>
-                                <hr>
-                            {% endfor %}
-                        {% else %}
-                            <p>Your cart is empty.</p>
-                        {% endif %}
-                    </ul>
-
-                    <div class="border-top pt-3">
-                        <p>Subtotal: ₹{{ total }}</p>
-                        <p>CGST Total: ₹{{ cgst_total }}</p>
-                        <p>SGST Total: ₹{{ sgst_total }}</p>
-                        <p><strong>Total GST: ₹{{ gst_total }}</strong></p>
-                        <p><strong>Grand Total: ₹{{ grand_total }}</strong></p>
-                    </div>
-                </div>
+            
+            <div class="form-group mt-4">
+                <button class="btn btn-black btn-lg py-3 btn-block" id="proceed_to_payment">Proceed to Payment</button>
             </div>
-        </div>
-
-        <div class="form-group mt-4">
-            <button class="btn btn-black btn-lg py-3 btn-block" id="rzp-button1">Place Order</button>
-        </div>
+        </form>
     </div>
 </div>
-
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     var options = {
-        "key": "{{ razorpay_merchant_key }}", // Enter the Key ID generated from the Razorpay Dashboard
-        "amount": "{{ razorpay_amount }}", // Amount is in paise
+        "key": "{{ razorpay_merchant_key }}",
+        "amount": "{{ razorpay_amount }}",
         "currency": "{{ currency }}",
-        "name": "Your E-commerce Store",
+        "name": "Stationery Shop",
         "description": "Purchase from your store",
-        "order_id": "{{ razorpay_order_id }}", // This is the Order ID created on your server
+        "order_id": "{{ razorpay_order_id }}",
         "handler": function (response){
-            // This function is called after a successful payment
             var form = document.createElement("form");
             form.method = "POST";
             form.action = "{% url 'paymenthandler' %}";
@@ -135,11 +148,17 @@
         }
     };
     var rzp1 = new Razorpay(options);
-    document.getElementById('rzp-button1').onclick = function(e){
-        rzp1.open();
+
+    document.getElementById('proceed_to_payment').onclick = function(e){
         e.preventDefault();
+        var selectedMethod = document.querySelector('input[name="payment_method"]:checked').value;
+        if (selectedMethod === 'online') {
+            rzp1.open();
+        } else if (selectedMethod === 'cod') {
+            // This is the key change: Submit the form instead of redirecting
+            document.getElementById('checkout_form').submit();
+        }
     }
 </script>
-
 
 {% endblock %}

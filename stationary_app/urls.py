@@ -15,9 +15,9 @@ urlpatterns = [
     path('remove_cart/<int:product_id>/', views.remove_cart, name='remove_cart'),
     path('remove_cart_item/<int:product_id>/', views.remove_cart_item, name='remove_cart_item'),
     path('checkout/', views.checkout_page, name='checkout'),
-    path('paymenthandler/', views.paymenthandler, name='paymenthandler'),
     
-    path('thankyou/', views.thankyou_page,name='thankyou'),
+    path('thankyou/<int:order_id>/', views.thankyou_page, name='thankyou'),
+
     path('blog/', views.blog_page,name='blog'),
 
     path('signup/', views.signup_view, name='signup'), 
@@ -39,5 +39,9 @@ urlpatterns = [
     path('admin_dashboard/categories/add/', views.add_category, name='add_category'),
     path('admin_dashboard/categories/edit/<int:pk>/', views.edit_category, name='edit_category'),
     path('admin_dashboard/categories/delete/<int:pk>/', views.delete_category, name='delete_category'),
+
+    path('paymenthandler/', views.paymenthandler, name='paymenthandler'),
+    path('place_cod_order/', views.place_cod_order, name='place_cod_order'),
+    path('admin_dashboard/orders/', views.admin_orders, name='admin_orders'),
 ]
 

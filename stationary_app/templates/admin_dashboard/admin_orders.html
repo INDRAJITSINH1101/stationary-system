@@ -1,0 +1,54 @@
+{% extends 'base1.html' %}
+{% load static %}
+{% block content %}
+<head>
+    <style>
+        /* Add your styles here for the table */
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Orders</h1>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-primary mb-3">Back to Dashboard</a>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>User</th>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Payment Method</th>
+                    <th>Paid</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.user.username }}</td>
+                    <td>{{ order.full_name }}</td>
+                    <td>{{ order.created_at|date:"F d, Y" }}</td>
+                    <td>₹{{ order.total_amount }}</td>
+                    <td>{{ order.payment_method }}</td>
+                    <td>{% if order.is_paid %}Yes{% else %}No{% endif %}</td>
+                    <td>
+                        <a href="#" class="btn btn-primary btn-sm">View Details</a>
+                        {% comment %} <a href="{% url 'download_bill' order.id %}" class="btn btn-secondary btn-sm">Download Bill</a> {% endcomment %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">No orders found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+{% endblock %}
