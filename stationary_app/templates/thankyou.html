@@ -22,16 +22,20 @@
                 <h2>Your order has been placed successfully!</h2>
                 {% if order %}
                     <p>Order ID: <strong>{{ order.id }}</strong></p>
-                    <p>User ID: <strong>{{ order.user.id }}</strong></p>
+                    <p>Name: <strong>{{ order.full_name }}</strong></p>
                     <p>Payment Method: <strong>{{ order.payment_method }}</strong></p>
                     {% if order.payment_id %}
                         <p>Payment ID: <strong>{{ order.payment_id }}</strong></p>
                     {% endif %}
                     <p>Total Amount: <strong>₹{{ order.total_amount }}</strong></p>
                     
+                    
                 {% endif %}
-                <p class="mt-4">
+                <p class="mt-6">
+                    <a href="{% url 'customer_invoice' order.id %}" class="btn btn-primary">View Invoice</a>
+                     
                     <a href="{% url 'shop' %}" class="btn btn-secondary">Continue Shopping</a>
+                    
                 </p>
             </div>
         </div>

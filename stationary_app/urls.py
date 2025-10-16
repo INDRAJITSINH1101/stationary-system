@@ -43,5 +43,8 @@ urlpatterns = [
     path('paymenthandler/', views.paymenthandler, name='paymenthandler'),
     path('place_cod_order/', views.place_cod_order, name='place_cod_order'),
     path('admin_dashboard/orders/', views.admin_orders, name='admin_orders'),
+    path('admin_dashboard/orders/<int:order_id>/', views.admin_order_detail, name='admin_order_detail'),
+    path('invoice/<int:order_id>/', views.customer_invoice, name='customer_invoice'),
+    
 ]
 

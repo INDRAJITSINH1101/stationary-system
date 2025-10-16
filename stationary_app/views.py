@@ -19,6 +19,8 @@ from django.http import HttpResponseBadRequest
 
 
 
+
+
 # Create your views here.
 def home_page(request):
     return render(request, 'index.html')
@@ -477,13 +479,12 @@ def paymenthandler(request):
                     total_gst = (product_price * item.product.gst_rate) / 100
                     grand_total += product_price + total_gst
 
-                # Create the Order
                 order = Order.objects.create(
                     user=request.user,
-                    full_name=request.user.username, # Should be replaced with form data
-                    address=request.user.userprofile.address, # Should be replaced with form data
-                    city="City", # Placeholder
-                    postal_code="12345", # Placeholder
+                    full_name=request.user.username,
+                    address=request.user.userprofile.address, 
+                    city="City",
+                    postal_code="12345", 
                     email=request.user.email,
                     phone_number=request.user.userprofile.mobile_number,
                     total_amount=grand_total,
@@ -492,7 +493,6 @@ def paymenthandler(request):
                     is_paid=True,
                 )
 
-                # Move cart items to order items
                 for cart_item in cart_items:
                     OrderItem.objects.create(
                         order=order,
@@ -521,10 +521,9 @@ def place_cod_order(request):
         if not cart_items.exists():
             return redirect('shop')
 
-        # Get billing details from the POST data
         full_name = f"{request.POST.get('c_fname')} {request.POST.get('c_lname')}"
         address = request.POST.get('c_address')
-        city = request.POST.get('c_state_country') # Assuming this field is used for city/state
+        city = request.POST.get('c_state_country') 
         postal_code = request.POST.get('c_postal_zip')
         email = request.POST.get('c_email_address')
         phone_number = request.POST.get('c_phone')
@@ -560,10 +559,31 @@ def place_cod_order(request):
         return redirect('thankyou', order_id=order.id)
     return redirect('checkout')
 
-
 @login_required
 @user_passes_test(is_admin)
 def admin_orders(request):
     orders = Order.objects.all().order_by('-created_at')
     context = {'orders': orders}
     return render(request, 'admin_dashboard/admin_orders.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def admin_order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    order_items = OrderItem.objects.filter(order=order)
+    context = {
+        'order': order,
+        'order_items': order_items,
+    }
+    return render(request, 'admin_dashboard/admin_order_detail.html', context)
+
+@login_required
+def customer_invoice(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order_items = OrderItem.objects.filter(order=order)
+    context = {
+        'order': order,
+        'order_items': order_items,
+    }
+    return render(request, 'invoice.html', context)
+

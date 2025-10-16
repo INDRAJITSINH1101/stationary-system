@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="card p-4">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2>Invoice</h2>
+                    <p>Order ID: {{ order.id }}</p>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Billed To:</h5>
+                            <p><strong>Name:</strong> {{ order.full_name }}</p>
+                            <p><strong>Email:</strong> {{ order.email }}</p>
+                            <p><strong>Phone:</strong> {{ order.phone_number }}</p>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <h5>Order Date:</h5>
+                            <p>{{ order.created_at|date:"F d, Y" }}</p>
+                            <h5>Payment Method:</h5>
+                            <p>{{ order.payment_method }}</p>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <h5>Order Items</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order_items %}
+                            <tr>
+                                <td>{{ item.product.name }}</td>
+                                <td>₹{{ item.price }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>₹{{ order.total_amount }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="text-right mt-4">
+                        <h4>Grand Total: ₹{{ order.total_amount }}</h4>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <p>Thank you for Shopping!</p>
+                    <button class="btn btn-secondary mt-3" onclick="window.print()">Print / Download PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

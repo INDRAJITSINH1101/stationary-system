@@ -1,0 +1,49 @@
+{% extends 'base1.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <h1>Order Details</h1>
+    <a href="{% url 'admin_orders' %}" class="btn btn-primary mb-3">Back to Orders</a>
+
+    <h3>Customer Information</h3>
+    <ul>
+        <li><strong>Order ID:</strong> {{ order.id }}</li>
+        <li><strong>User:</strong> {{ order.user.username }}</li>
+        <li><strong>Full Name:</strong> {{ order.full_name }}</li>
+        <li><strong>Email:</strong> {{ order.email }}</li>
+        <li><strong>Phone:</strong> {{ order.phone_number }}</li>
+        <li><strong>Address:</strong> {{ order.address }}, {{ order.city }}, {{ order.postal_code }}</li>
+        <li><strong>Payment Method:</strong> {{ order.payment_method }}</li>
+        <li><strong>Payment Status:</strong> {% if order.is_paid %}Paid{% else %}Not Paid{% endif %}</li>
+        {% if order.payment_id %}
+            <li><strong>Payment ID:</strong> {{ order.payment_id }}</li>
+        {% endif %}
+        <li><strong>Date:</strong> {{ order.created_at }}</li>
+    </ul>
+
+    <h3>Order Items</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price per item</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_items %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ item.price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3 class="mt-4">Order Summary</h3>
+    <p><strong>Grand Total:</strong> ₹{{ order.total_amount }}</p>
+
+</div>
+{% endblock %}
