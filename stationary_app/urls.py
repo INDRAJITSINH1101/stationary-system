@@ -4,7 +4,7 @@ from .import views
 urlpatterns = [
     path('', views.home_page,name='home'),
     path('shop/',views.shop_page,name='shop'),
-    path('shop/category/<int:category_pk>/', views.shop_page, name='shop_by_category'),
+    path('shop/subcategory/<int:subcategory_pk>/', views.shop_page, name='shop_by_subcategory'),
 
     path('about/', views.about_page,name='about'),
     path('services/',views.services_page,name='services'),
@@ -39,6 +39,11 @@ urlpatterns = [
     path('admin_dashboard/categories/add/', views.add_category, name='add_category'),
     path('admin_dashboard/categories/edit/<int:pk>/', views.edit_category, name='edit_category'),
     path('admin_dashboard/categories/delete/<int:pk>/', views.delete_category, name='delete_category'),
+
+    path('admin_dashboard/subcategories',views.admin_subcategories, name='admin_subcategories'),
+    path('admin_dashboard/subcategories/add/', views.add_subcategory, name='add_subcategory'),
+    path('admin_dashboard/subcategories/edit/<int:pk>/', views.edit_subcategory, name='edit_subcategory'),
+    path('admin_dashboard/subcategories/delete/<int:pk>/', views.delete_subcategory, name='delete_subcategory'),
 
     path('paymenthandler/', views.paymenthandler, name='paymenthandler'),
     path('place_cod_order/', views.place_cod_order, name='place_cod_order'),

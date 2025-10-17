@@ -32,16 +32,15 @@
   <div class="container">
     <div class="row mb-4">
         <div class="col-md-4">
-          <h2>Filter by Category</h2>
+          <h2>Filter by SubCategory</h2>
           <div class="mb-4">
-            <label for="category-filter" class="form-label">Select a Category:</label>
-            <select class="form-select" id="category-filter" onchange="window.      location.href=this. value;">
-              <option value="{% url 'shop' %}" {% if not selected_category %}selected{% endif %}>All</option>
-              {% for category in categories %}
-              <option value="{% url 'shop_by_category' category_pk=category.pk %}" 
-                {% if selected_category == category.name %}selected{% endif %}>
-                {{ category.name }}
-              </option>
+            <label for="subcategory-filter" class="form-label">Select a SubCategory:</label>
+            <select class="form-select" id="subcategory-filter" onchange="window.      location.href=this. value;">
+              <option value="{% url 'shop' %}" {% if not selected_subcategory %}selected{% endif %}>All Products</option>
+              {% for subcategory in subcategories %} 
+              <option value="{% url 'shop_by_subcategory' subcategory_pk=subcategory.pk %}" 
+                {% if selected_subcategory == subcategory.name %}selected{% endif %}>
+                {{ subcategory.category.name }} - {{ subcategory.name }} </option>
               {% endfor %}
             </select>
           </div>

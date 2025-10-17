@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from .models import UserProfile,Product
 import re
 from django.core.exceptions import ValidationError
-from .models import Category,ProductImage
+from .models import Category,ProductImage,SubCategory
 
 
 class signupform(forms.ModelForm):
@@ -87,12 +87,17 @@ class UserProfileUpdateForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name','category','company','price','gst_rate', 'description','image']
+        fields = ['name','subcategory','company','price','gst_rate', 'description','image']
 
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
         fields = ['name']
+
+class SubCategoryForm(forms.ModelForm):
+    class Meta:
+        model = SubCategory
+        fields = ['category', 'name']
 
 class ProductImageForm(forms.ModelForm):
     class Meta:

@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect,get_object_or_404
-from .form import signupform,PasswordResetConfirmForm,PasswordResetForm,UserProfileUpdateForm,UserUpdateForm,ProductForm,CategoryForm,ProductImageForm
+from .form import signupform,PasswordResetConfirmForm,PasswordResetForm,UserProfileUpdateForm,UserUpdateForm,ProductForm,CategoryForm,ProductImageForm,SubCategoryForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import UserProfile,Product,Category,ProductImage,Cart,CartItem,Order,OrderItem
+from .models import UserProfile,Product,Category,ProductImage,Cart,CartItem,Order,OrderItem,SubCategory
 from django.contrib.auth.models import User
 from django.db.models import Q # Import Q object for complex lookups
 from django.core.paginator import Paginator
@@ -26,10 +26,10 @@ from weasyprint import HTML, CSS
 def home_page(request):
     return render(request, 'index.html')
 
-def shop_page(request, category_pk=None):
+def shop_page(request, subcategory_pk=None): # Changed category_pk to subcategory_pk
     products = Product.objects.all()
     categories = Category.objects.all()
-    selected_category = None
+    selected_subcategory = None # Changed variable name
 
     # Check for a search query
     query = request.GET.get('q')
@@ -40,25 +40,31 @@ def shop_page(request, category_pk=None):
             Q(description__icontains=query)
         ).distinct()
     
-    # Filter by category if a category name is provided
-    if category_pk:
-        category = get_object_or_404(Category, pk=category_pk)
-        products = products.filter(category=category)
-        selected_category = category.name
+    # Filter by subcategory if a subcategory ID is provided
+    if subcategory_pk:
+        # Changed Category to SubCategory
+        subcategory = get_object_or_404(SubCategory, pk=subcategory_pk) 
+        # Changed filter field to 'subcategory'
+        products = products.filter(subcategory=subcategory)
+        selected_subcategory = subcategory.name # Use subcategory name
         paginator = Paginator(products, 3)
         page = request.GET.get('page')
         paged_products = paginator.get_page(page)
         product_count = products.count()
     else:
         paginator = Paginator(products, 3)
-        page = request.GET.get('page')  # Get the current page number from the URL query parameter 'page'
+        page = request.GET.get('page')  
         paged_products = paginator.get_page(page)
-        product_count = products.count() # Get the products for the requested page
+        product_count = products.count()
 
+    # Pass subcategories to context for display/filtering
+    subcategories = SubCategory.objects.all() 
+    
     context = {
         'products': paged_products,
-        'categories': categories,
-        'selected_category': selected_category,
+        'categories': categories, # Still passing main categories
+        'subcategories': subcategories, # New context variable
+        'selected_subcategory': selected_subcategory, # Updated context variable
         'product_count' : product_count,
     }
     return render(request, 'shop.html', context)
@@ -611,3 +617,53 @@ def download_invoice_pdf(request, order_id):
     
     return response
 
+@login_required
+@user_passes_test(is_admin)
+def admin_subcategories(request):
+    # Fetch all subcategories and their parent categories
+    subcategories = SubCategory.objects.select_related('category').all()
+    context = {'subcategories': subcategories}
+    return render(request,'admin_category/admin_subcategories.html',context) # New template path
+
+@login_required
+@user_passes_test(is_admin)
+def add_subcategory(request):
+    if request.method == 'POST':
+        form = SubCategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_subcategories') # Redirect to the new subcategory list
+    else:
+        form = SubCategoryForm()
+    # New template path
+    return render(request, 'admin_category/add_subcategory.html', {'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def edit_subcategory(request, pk):
+    subcategory = get_object_or_404(SubCategory, pk=pk)
+
+    if request.method == 'POST':
+        form = SubCategoryForm(request.POST, instance=subcategory)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_subcategories') # Redirect to the new subcategory list
+    else:
+        form = SubCategoryForm(instance=subcategory)
+
+    context = {
+        'form': form,
+        'subcategory': subcategory 
+    }
+    # New template path
+    return render(request, 'admin_category/edit_subcategory.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def delete_subcategory(request, pk):
+    subcategory = get_object_or_404(SubCategory, pk=pk)
+    if request.method == 'POST':
+        subcategory.delete()
+        return redirect('admin_subcategories') # Redirect to the new subcategory list
+    # New template path
+    return render(request, 'admin_category/delete_subcategory.html', {'subcategory': subcategory})
