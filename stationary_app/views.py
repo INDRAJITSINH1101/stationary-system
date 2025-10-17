@@ -13,7 +13,8 @@ import os
 import razorpay
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest,HttpResponse
+from weasyprint import HTML, CSS
 
 
 
@@ -25,10 +26,10 @@ from django.http import HttpResponseBadRequest
 def home_page(request):
     return render(request, 'index.html')
 
-def shop_page(request, category_name=None):
+def shop_page(request, category_pk=None):
     products = Product.objects.all()
     categories = Category.objects.all()
-    selected_category = category_name
+    selected_category = None
 
     # Check for a search query
     query = request.GET.get('q')
@@ -40,9 +41,10 @@ def shop_page(request, category_name=None):
         ).distinct()
     
     # Filter by category if a category name is provided
-    if category_name:
-        category = get_object_or_404(Category, name=category_name)
+    if category_pk:
+        category = get_object_or_404(Category, pk=category_pk)
         products = products.filter(category=category)
+        selected_category = category.name
         paginator = Paginator(products, 3)
         page = request.GET.get('page')
         paged_products = paginator.get_page(page)
@@ -586,4 +588,26 @@ def customer_invoice(request, order_id):
         'order_items': order_items,
     }
     return render(request, 'invoice.html', context)
+
+@login_required
+def download_invoice_pdf(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    
+    if request.user != order.user and not is_admin(request.user):
+        return HttpResponse("Unauthorized to view this invoice.", status=403) 
+    
+    order_items = OrderItem.objects.filter(order=order)
+    context = {
+        'order': order,
+        'order_items': order_items,
+    }
+
+    html_content = render(request, 'invoice.html', context).content.decode('utf-8')
+
+    pdf_file = HTML(string=html_content, base_url=request.build_absolute_uri('/')).write_pdf()
+
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="invoice_{order.id}.pdf"'
+    
+    return response
 

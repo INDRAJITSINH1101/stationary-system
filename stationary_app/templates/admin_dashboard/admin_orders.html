@@ -39,7 +39,7 @@
                     <td>{% if order.is_paid %}Yes{% else %}No{% endif %}</td>
                     <td>
                         <a href="{% url 'admin_order_detail' order.id %}" class="btn btn-primary btn-sm">View Details</a>
-                        {% comment %} <a href="{% url 'download_bill' order.id %}" class="btn btn-secondary btn-sm">Download Bill</a> {% endcomment %}
+                        <a href="{% url 'download_invoice_pdf' order.id %}" class="btn btn-secondary btn-sm">Download Bill (PDF)</a>
                     </td>
                 </tr>
                 {% empty %}

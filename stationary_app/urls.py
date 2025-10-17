@@ -4,7 +4,7 @@ from .import views
 urlpatterns = [
     path('', views.home_page,name='home'),
     path('shop/',views.shop_page,name='shop'),
-    path('shop/<str:category_name>/', views.shop_page, name='shop_by_category'),
+    path('shop/category/<int:category_pk>/', views.shop_page, name='shop_by_category'),
 
     path('about/', views.about_page,name='about'),
     path('services/',views.services_page,name='services'),
@@ -45,6 +45,8 @@ urlpatterns = [
     path('admin_dashboard/orders/', views.admin_orders, name='admin_orders'),
     path('admin_dashboard/orders/<int:order_id>/', views.admin_order_detail, name='admin_order_detail'),
     path('invoice/<int:order_id>/', views.customer_invoice, name='customer_invoice'),
+
+    path('download_invoice_pdf/<int:order_id>/', views.download_invoice_pdf, name='download_invoice_pdf'),
     
 ]
 

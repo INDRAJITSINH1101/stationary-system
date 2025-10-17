@@ -4,6 +4,7 @@
 <div class="container">
     <h1>Order Details</h1>
     <a href="{% url 'admin_orders' %}" class="btn btn-primary mb-3">Back to Orders</a>
+    <a href="{% url 'download_invoice_pdf' order.id %}" class="btn btn-secondary mb-3">Download Invoice PDF</a>
 
     <h3>Customer Information</h3>
     <ul>

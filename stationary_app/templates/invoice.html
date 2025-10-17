@@ -54,7 +54,8 @@
                 </div>
                 <div class="card-footer text-center">
                     <p>Thank you for Shopping!</p>
-                    <button class="btn btn-secondary mt-3" onclick="window.print()">Print / Download PDF</button>
+                    <a href="{% url 'download_invoice_pdf' order.id %}" class="btn btn-success mt-3">Download Invoice PDF</a>
+                </div>
                 </div>
             </div>
         </div>
