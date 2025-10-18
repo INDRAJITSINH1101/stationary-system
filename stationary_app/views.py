@@ -13,7 +13,7 @@ import os
 import razorpay
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponseBadRequest,HttpResponse
+from django.http import HttpResponseBadRequest,HttpResponse,JsonResponse
 from weasyprint import HTML, CSS
 
 
@@ -26,12 +26,11 @@ from weasyprint import HTML, CSS
 def home_page(request):
     return render(request, 'index.html')
 
-def shop_page(request, subcategory_pk=None): # Changed category_pk to subcategory_pk
+def shop_page(request, subcategory_pk=None): 
     products = Product.objects.all()
     categories = Category.objects.all()
-    selected_subcategory = None # Changed variable name
+    selected_subcategory = None 
 
-    # Check for a search query
     query = request.GET.get('q')
     if query:
         products = products.filter(
@@ -40,13 +39,10 @@ def shop_page(request, subcategory_pk=None): # Changed category_pk to subcategor
             Q(description__icontains=query)
         ).distinct()
     
-    # Filter by subcategory if a subcategory ID is provided
     if subcategory_pk:
-        # Changed Category to SubCategory
         subcategory = get_object_or_404(SubCategory, pk=subcategory_pk) 
-        # Changed filter field to 'subcategory'
         products = products.filter(subcategory=subcategory)
-        selected_subcategory = subcategory.name # Use subcategory name
+        selected_subcategory = subcategory.name 
         paginator = Paginator(products, 3)
         page = request.GET.get('page')
         paged_products = paginator.get_page(page)
@@ -57,14 +53,13 @@ def shop_page(request, subcategory_pk=None): # Changed category_pk to subcategor
         paged_products = paginator.get_page(page)
         product_count = products.count()
 
-    # Pass subcategories to context for display/filtering
     subcategories = SubCategory.objects.all() 
     
     context = {
         'products': paged_products,
-        'categories': categories, # Still passing main categories
-        'subcategories': subcategories, # New context variable
-        'selected_subcategory': selected_subcategory, # Updated context variable
+        'categories': categories, 
+        'subcategories': subcategories, 
+        'selected_subcategory': selected_subcategory, 
         'product_count' : product_count,
     }
     return render(request, 'shop.html', context)
@@ -194,6 +189,13 @@ def admin_dashboard(request):
     }
     return render(request, 'admin_dashboard/admin_dashboard.html', context)
 
+def load_subcategories(request):
+    category_id = request.GET.get('category_id')
+    subcategories = SubCategory.objects.filter(category_id=category_id).order_by('name')
+    subcategory_list = [{'id': subcategory.id, 'name': subcategory.name} for subcategory in subcategories]
+    return JsonResponse(subcategory_list, safe=False)
+
+
 @login_required
 @user_passes_test(is_admin)
 def add_product(request):
@@ -210,17 +212,15 @@ def add_product(request):
 @user_passes_test(is_admin)
 def edit_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    images = product.images.all() # Fetch all images related to the product
+    images = product.images.all()
     
     if request.method == 'POST':
-        # Create form instances with POST data and files
         product_form = ProductForm(request.POST, request.FILES, instance=product)
         
-        # Handle the deletion of existing images
+      
         delete_image_ids = request.POST.getlist('delete_image_ids')
         for image_id in delete_image_ids:
             try:
-                # Find the image object by its ID and delete it
                 image_to_delete = ProductImage.objects.get(id=image_id)
                 image_to_delete.delete()
             except ProductImage.DoesNotExist:
@@ -230,19 +230,18 @@ def edit_product(request, pk):
             for file in request.FILES.getlist('images'):
                 ProductImage.objects.create(product=product, image=file)
 
-        # Save the main product form
+      
         if product_form.is_valid():
             product_form.save()
             return redirect('admin_dashboard')
             
     else:
-        # For a GET request, initialize the forms
         product_form = ProductForm(instance=product)
         
     context = {
         'form': product_form,
         'product': product,
-        'images': images, # Pass the fetched images to the template
+        'images': images, 
     }
     return render(request, 'admin_dashboard/edit_product.html', context)
 
@@ -620,10 +619,9 @@ def download_invoice_pdf(request, order_id):
 @login_required
 @user_passes_test(is_admin)
 def admin_subcategories(request):
-    # Fetch all subcategories and their parent categories
     subcategories = SubCategory.objects.select_related('category').all()
     context = {'subcategories': subcategories}
-    return render(request,'admin_category/admin_subcategories.html',context) # New template path
+    return render(request,'admin_category/admin_subcategories.html',context) 
 
 @login_required
 @user_passes_test(is_admin)
@@ -632,10 +630,9 @@ def add_subcategory(request):
         form = SubCategoryForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('admin_subcategories') # Redirect to the new subcategory list
+            return redirect('admin_subcategories') 
     else:
         form = SubCategoryForm()
-    # New template path
     return render(request, 'admin_category/add_subcategory.html', {'form': form})
 
 @login_required
@@ -647,7 +644,7 @@ def edit_subcategory(request, pk):
         form = SubCategoryForm(request.POST, instance=subcategory)
         if form.is_valid():
             form.save()
-            return redirect('admin_subcategories') # Redirect to the new subcategory list
+            return redirect('admin_subcategories') 
     else:
         form = SubCategoryForm(instance=subcategory)
 
@@ -655,7 +652,6 @@ def edit_subcategory(request, pk):
         'form': form,
         'subcategory': subcategory 
     }
-    # New template path
     return render(request, 'admin_category/edit_subcategory.html', context)
 
 @login_required
@@ -664,6 +660,7 @@ def delete_subcategory(request, pk):
     subcategory = get_object_or_404(SubCategory, pk=pk)
     if request.method == 'POST':
         subcategory.delete()
-        return redirect('admin_subcategories') # Redirect to the new subcategory list
-    # New template path
+        return redirect('admin_subcategories') 
     return render(request, 'admin_category/delete_subcategory.html', {'subcategory': subcategory})
+
+

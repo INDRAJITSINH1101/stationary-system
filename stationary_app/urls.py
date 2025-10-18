@@ -45,6 +45,8 @@ urlpatterns = [
     path('admin_dashboard/subcategories/edit/<int:pk>/', views.edit_subcategory, name='edit_subcategory'),
     path('admin_dashboard/subcategories/delete/<int:pk>/', views.delete_subcategory, name='delete_subcategory'),
 
+    path('ajax/load-subcategories/', views.load_subcategories, name='ajax_load_subcategories'),
+
     path('paymenthandler/', views.paymenthandler, name='paymenthandler'),
     path('place_cod_order/', views.place_cod_order, name='place_cod_order'),
     path('admin_dashboard/orders/', views.admin_orders, name='admin_orders'),

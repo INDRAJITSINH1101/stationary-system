@@ -85,9 +85,26 @@ class UserProfileUpdateForm(forms.ModelForm):
         return mobile_number
      
 class ProductForm(forms.ModelForm):
+    category = forms.ModelChoiceField(
+        queryset=Category.objects.all(),
+        required=True,
+        label="Category"
+    )
+
     class Meta:
         model = Product
-        fields = ['name','subcategory','company','price','gst_rate', 'description','image']
+        fields = ['name', 'subcategory', 'company', 'price', 'gst_rate', 'description', 'image']
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        if 'subcategory' in self.fields:
+            self.fields['subcategory'].queryset = SubCategory.objects.none()
+
+            if self.instance and self.instance.pk and self.instance.subcategory:
+                initial_category = self.instance.subcategory.category
+                self.initial['category'] = initial_category.pk
+                self.fields['subcategory'].queryset = SubCategory.objects.filter(category=initial_category)
 
 class CategoryForm(forms.ModelForm):
     class Meta:
