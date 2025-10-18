@@ -27,7 +27,7 @@ def home_page(request):
     return render(request, 'index.html')
 
 def shop_page(request, subcategory_pk=None): 
-    products = Product.objects.all()
+    products = Product.objects.all().select_related('subcategory__category')
     categories = Category.objects.all()
     selected_subcategory = None 
 
@@ -183,7 +183,7 @@ def is_admin(user):
 @login_required
 @user_passes_test(is_admin)
 def admin_dashboard(request):
-    products = Product.objects.all()  
+    products = Product.objects.all().select_related('subcategory__category') 
     context = {
         'products': products  
     }
@@ -202,7 +202,9 @@ def add_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            product = form.save(commit=False)
+            product.subcategory = form.cleaned_data['subcategory']
+            product.save()
             return redirect('admin_dashboard')
     else:
         form = ProductForm()

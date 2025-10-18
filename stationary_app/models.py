@@ -22,23 +22,27 @@ class SubCategory(models.Model):
     name = models.CharField(max_length=50)
 
     class Meta:
-        # Enforce unique subcategory name within a category
         unique_together = ('category', 'name')
         verbose_name_plural = "SubCategories"
 
     def __str__(self):
         return f"{self.category.name} - {self.name}"
 
-# Updated Product Model
 class Product(models.Model):
     name = models.CharField(max_length=100)
-    # Changed from Category to SubCategory
     subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE, null=True, blank=True)
     company = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     gst_rate = models.DecimalField(max_digits=5, decimal_places=2, default=18.00, help_text="GST rate in %")
     description = models.TextField()
     image = models.ImageField(upload_to="products/")
+
+    @property
+    def category(self):
+        """Returns the Category of the product via its SubCategory."""
+        if self.subcategory:
+            return self.subcategory.category
+        return None
 
     def cgst_amount(self):
         return (self.price * (self.gst_rate / 2)) / 100

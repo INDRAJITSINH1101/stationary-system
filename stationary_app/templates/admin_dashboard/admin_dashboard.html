@@ -52,6 +52,7 @@
                     <th>Image</th>
                     <th>Name</th>
                     <th>Category</th>
+                    <th>SubCategory</th>
                     <th>Price</th>
                     <th>Images Count</th>
                     <th>Actions</th>
@@ -62,7 +63,20 @@
                 <tr>
                     <td><img src="{{ product.image.url }}" alt="{{ product.name }}" width="100"></td>
                     <td>{{ product.name }}</td>
-                    <td>{{ product.category.name|default:"N/A" }}</td>
+                    <td>
+                        {% if product.subcategory %}
+                            {{ product.subcategory.category.name }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if product.subcategory %}
+                            {{ product.subcategory.name }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
                     <td>₹{{ product.price }}</td>
                     <td>{{ product.images.count }}</td>
                     <td>
@@ -78,7 +92,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6">No products found.</td>
+                    <td colspan="7">No products found.</td>
                 </tr>
                 {% endfor %}
             </tbody>

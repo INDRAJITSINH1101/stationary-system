@@ -85,16 +85,14 @@
             {% for error in form.non_field_errors %}
                 <div class="alert alert-danger">{{ error }}</div>
             {% endfor %}
-
+            
             <button type="submit" class="btn">Add Product</button>
             <a href="{% url 'admin_dashboard' %}" class="btn btn-back">Back to Dashboard</a>
         </form>
     </div>
 
-    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <!-- AJAX Script for Dynamic Subcategories -->
     <script>
         $(document).ready(function() {
             const categorySelect = $('#id_category');

@@ -93,18 +93,23 @@ class ProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = ['name', 'subcategory', 'company', 'price', 'gst_rate', 'description', 'image']
+        fields = ['name',  'category','subcategory', 'company', 'price', 'gst_rate', 'description', 'image']
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         if 'subcategory' in self.fields:
             self.fields['subcategory'].queryset = SubCategory.objects.none()
 
-            if self.instance and self.instance.pk and self.instance.subcategory:
-                initial_category = self.instance.subcategory.category
-                self.initial['category'] = initial_category.pk
-                self.fields['subcategory'].queryset = SubCategory.objects.filter(category=initial_category)
+        if 'category' in self.data:
+            try:
+                category_id = int(self.data.get('category'))
+                self.fields['subcategory'].queryset = SubCategory.objects.filter(category_id=category_id).order_by('name')
+            except (ValueError, TypeError):
+                pass
+        elif self.instance.pk and self.instance.subcategory:
+            self.fields['subcategory'].queryset = SubCategory.objects.filter(category=self.instance.subcategory.category).order_by('name')
+            self.fields['category'].initial = self.instance.subcategory.category
 
 class CategoryForm(forms.ModelForm):
     class Meta:
