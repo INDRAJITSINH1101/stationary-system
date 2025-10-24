@@ -39,10 +39,23 @@
                         <p><strong>Company:</strong> {{ product.company }}</p>
                     </div>
                     
-                    <form action="{% url 'add_cart' product.id %}" method="post">
-                        <a href="{% url 'shop' %}" class="btn btn-secondary ">Back to Shop</a>
+                    <p>
+                        <strong>Availability: </strong>
+                        {% if product.is_in_stock %}
+                            <span class="text-success fw-bold">In Stock ({{ product.stock }} units)</span>
+                        {% else %}
+                            <span class="text-danger fw-bold">Out of Stock</span>
+                        {% endif %}
+                    </p>
+
+                    <form action="{% url 'add_cart' product.id %}" method="post" class="mt-4">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-block btn-primary">Add to Cart</button>
+                    
+                        {% if product.is_in_stock %}
+                            <button type="submit" class="btn btn-primary btn-lg py-3 px-5">Add to Cart</button>
+                        {% else %}
+                            <button type="button" class="btn btn-secondary btn-lg py-3 px-5" disabled>Out of Stock</button>
+                        {% endif %}
                     </form>
                 </div>
             </div>

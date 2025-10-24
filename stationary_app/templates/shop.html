@@ -66,15 +66,23 @@
                 <div class="fix-height">
                     <h3 class="product-title">{{ product.name }}</h3>
                     <h4 class="product-company">Company: {{ product.company }}</h4>
-                    <h4 class="product-price">{{ product.price }}</h4>
+                    <h4 class="product-price">₹{{ product.price }}</h4>
+
+                    {% if product.is_in_stock %}
+                        <p class="text-success">In Stock</p>
+                    {% else %}
+                        <p class="text-danger">Out of Stock</p>
+                    {% endif %}
                     
                     <form action="{% url 'add_cart' product.id %}" method="post">
-                      <a href="{% url 'product_details' pk=product.pk %}" class="btn btn-block btn-secondary">
-                        View Details
-                    </a>
                       {% csrf_token %}
-                      <button type="submit" class="btn btn-block btn-primary">Add to Cart</button>
+                      {% if product.is_in_stock %}
+                        <button type="submit" class="btn btn-block btn-primary">Add to Cart</button>
+                      {% else %}
+                        <button type="button" class="btn btn-block btn-secondary" disabled>Out of Stock</button>
+                      {% endif %}
                     </form>
+
                 </div>
             </figcaption>
       </figure>

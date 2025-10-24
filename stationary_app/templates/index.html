@@ -27,13 +27,16 @@
 <div class="product-section">
   
   <div class="container">
+    
     <div class="col-md-8">
+      {% include 'category_header.html' with categories=categories %}<br>
             <form method="get" action="{% url 'shop' %}">
                 <div class="input-group mb-3">
                     <input type="text" class="form-control" placeholder="Search for products..." name="q" >
                     <button class="btn btn-primary" type="submit">Search</button>
                 </div>
             </form>
+            
         </div>
     <div class="row">
       <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">

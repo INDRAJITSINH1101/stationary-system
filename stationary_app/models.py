@@ -36,6 +36,11 @@ class Product(models.Model):
     gst_rate = models.DecimalField(max_digits=5, decimal_places=2, default=18.00, help_text="GST rate in %")
     description = models.TextField()
     image = models.ImageField(upload_to="products/")
+    stock = models.PositiveIntegerField(default=0)
+
+    @property
+    def is_in_stock(self):
+        return self.stock >0
 
     @property
     def category(self):

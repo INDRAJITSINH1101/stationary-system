@@ -24,7 +24,12 @@ from weasyprint import HTML, CSS
 
 # Create your views here.
 def home_page(request):
-    return render(request, 'index.html')
+    categories = Category.objects.all().prefetch_related('subcategories')
+    
+    context = {
+        'categories': categories,
+    }
+    return render(request, 'index.html',context)
 
 def shop_page(request, subcategory_pk=None): 
     products = Product.objects.all().select_related('subcategory__category')
@@ -332,12 +337,19 @@ def add_cart(request, product_id):
     except Cart.DoesNotExist:
         cart = Cart.objects.create(cart_id=_cart_id(request))
     cart.save()
+
+    if not product.is_in_stock:
+        return redirect('shop')
     
     try:
         cart_item = CartItem.objects.get(product=product, cart=cart)
+        if product.stock <= cart_item.quantity: # Prevent adding more than stock available
+             return redirect('cart')
         cart_item.quantity += 1
         cart_item.save()
     except CartItem.DoesNotExist:
+        if product.stock < 1: # Should not happen if the first check passes, but for safety
+             return redirect('shop')
         cart_item = CartItem.objects.create(
             product=product,
             quantity=1,

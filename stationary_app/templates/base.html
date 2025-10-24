@@ -16,6 +16,66 @@
   <link href="{% static 'css/tiny-slider.css' %}" rel="stylesheet">
   <link href="{% static 'css/style.css' %}" rel="stylesheet">
   <title>Stationery Shop</title>
+  <style>
+    .category-header-nav {
+      background-color: #f8f8f8;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 0 1rem;
+    }
+    .category-menu-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center; /* Center the menu items */
+    }
+    .category-menu-item {
+      position: relative; /* Required for dropdown positioning */
+      display: inline-block;
+    }
+    .category-menu-item > a {
+      display: block;
+      padding: 15px 20px;
+      text-decoration: none;
+      color: #333;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+    .category-menu-item:hover > a {
+      background-color: #eee;
+    }
+    /* The Submenu (hidden by default) */
+    .submenu-list {
+      display: none; /* Hide dropdowns */
+      position: absolute;
+      left: 0;
+      top: 100%; /* Position right below the parent */
+      background-color: #ffffff;
+      list-style: none;
+      padding: 10px 0;
+      margin: 0;
+      min-width: 220px;
+      z-index: 1000;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .submenu-item a {
+      display: block;
+      padding: 8px 20px;
+      text-decoration: none;
+      color: #555;
+      font-size: 0.85rem;
+    }
+    .submenu-item a:hover {
+      background-color: #f5f5f5;
+      color: #000;
+    }
+    /* Show the submenu on hover */
+    .category-menu-item:hover .submenu-list {
+      display: block;
+    }
+  </style>
 </head>
 <body>
 

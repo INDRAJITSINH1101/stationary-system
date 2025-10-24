@@ -1,0 +1,28 @@
+{% load static %}
+
+<nav class="category-header-nav">
+  <div class="container">
+    <ul class="category-menu-list">
+      
+      {% for category in categories %}
+      <li class="category-menu-item {% if category.subcategories.all %}has-dropdown{% endif %}">
+        
+        <a href="#">{{ category.name }}</a>
+
+        {% if category.subcategories.all %}
+          <ul class="submenu-list">
+            
+            {% for subcat in category.subcategories.all %}
+              <li class="submenu-item">
+                <a href="{% url 'shop_by_subcategory' subcat.pk %}">{{ subcat.name }}</a>
+              </li>
+            {% endfor %}
+
+          </ul>
+        {% endif %}
+      </li>
+      {% endfor %}
+
+    </ul>
+  </div>
+</nav>

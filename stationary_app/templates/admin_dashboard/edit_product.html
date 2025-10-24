@@ -71,6 +71,20 @@
                 {{ form.price.label_tag }} {{ form.price }}
             </div>
             <div>
+                {{ form.gst_rate.label_tag }} {{ form.gst_rate }}
+            </div>
+            <div>
+                <label for="{{ form.stock.id_for_label }}">Stock Quantity:</label> 
+                {{ form.stock }}
+                <small>Current Status: 
+                    {% if product.is_in_stock %}
+                        <span style="color: green; font-weight: bold;">In Stock ({{ product.stock }})</span>
+                    {% else %}
+                        <span style="color: red; font-weight: bold;">Out of Stock ({{ product.stock }})</span>
+                    {% endif %}
+                </small>
+            </div>
+            <div>
                 {{ form.description.label_tag }} {{ form.description }}
             </div>
 
