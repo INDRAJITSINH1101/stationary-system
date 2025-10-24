@@ -76,6 +76,7 @@
             <p>{{ form.name.label_tag }} {{ form.name }}</p>
             <p id="category-p">{{ form.category.label_tag }} {{ form.category }}</p>
             <p id="subcategory-p">{{ form.subcategory.label_tag }} {{ form.subcategory }}</p>
+            <p id="subsubcategory-p">{{ form.subsubcategory.label_tag }} {{ form.subsubcategory }}</p>
             <p>{{ form.company.label_tag }} {{ form.company }}</p>
             <p>{{ form.price.label_tag }} {{ form.price }}</p>
             <p>{{ form.stock.label_tag }} {{ form.stock }}</p>
@@ -98,9 +99,14 @@
         $(document).ready(function() {
             const categorySelect = $('#id_category');
             const subcategorySelect = $('#id_subcategory');
+            const subsubcategorySelect = $('#id_subsubcategory');
 
+            // 1. Function to load SubCategories based on Category selection
             function loadSubcategories() {
                 const categoryId = categorySelect.val();
+
+                // Reset SubSubCategory field
+                subsubcategorySelect.html('<option value="">--- Select Subcategory First ---</option>').prop('disabled', true);
 
                 if (!categoryId) {
                     subcategorySelect.html('<option value="">--- Select Category First ---</option>');
@@ -129,10 +135,43 @@
                 });
             }
 
-            // Trigger change event
-            categorySelect.change(loadSubcategories);
+            // 2. Function to load SubSubCategories based on SubCategory selection (NEW)
+            function loadSubsubcategories() {
+                const subcategoryId = subcategorySelect.val();
 
-            // Initialize on page load
+                if (!subcategoryId) {
+                    subsubcategorySelect.html('<option value="">--- Select Subcategory First ---</option>');
+                    subsubcategorySelect.prop('disabled', true);
+                    return;
+                }
+
+                subsubcategorySelect.prop('disabled', false);
+                subsubcategorySelect.html('<option value="">Loading...</option>');
+
+                $.ajax({
+                    url: "{% url 'ajax_load_subsubcategories' %}",
+                    data: { 'subcategory_id': subcategoryId },
+                    dataType: 'json',
+                    success: function(data) {
+                        subsubcategorySelect.html('<option value="">--- Select Sub-Subcategory ---</option>');
+                        $.each(data, function(key, value) {
+                            subsubcategorySelect.append(
+                                $('<option></option>').attr('value', value.id).text(value.name)
+                            );
+                        });
+                    },
+                    error: function() {
+                        subsubcategorySelect.html('<option value="">Error loading sub-subcategories</option>');
+                    }
+                });
+            }
+
+
+            // Attach change handlers
+            categorySelect.change(loadSubcategories);
+            subcategorySelect.change(loadSubsubcategories); // Trigger on subcategory change
+
+            // Initial state on page load
             if (!categorySelect.val()) {
                 loadSubcategories();
             }

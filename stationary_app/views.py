@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect,get_object_or_404
-from .form import signupform,PasswordResetConfirmForm,PasswordResetForm,UserProfileUpdateForm,UserUpdateForm,ProductForm,CategoryForm,ProductImageForm,SubCategoryForm
+from .form import signupform,PasswordResetConfirmForm,PasswordResetForm,UserProfileUpdateForm,UserUpdateForm,ProductForm,CategoryForm,ProductImageForm,SubCategoryForm,SubSubCategoryForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import UserProfile,Product,Category,ProductImage,Cart,CartItem,Order,OrderItem,SubCategory
+from .models import UserProfile,Product,Category,ProductImage,Cart,CartItem,Order,OrderItem,SubCategory,SubSubCategory
 from django.contrib.auth.models import User
 from django.db.models import Q # Import Q object for complex lookups
 from django.core.paginator import Paginator
@@ -24,17 +24,19 @@ from weasyprint import HTML, CSS
 
 # Create your views here.
 def home_page(request):
-    categories = Category.objects.all().prefetch_related('subcategories')
+    categories = Category.objects.all().prefetch_related('subcategories__subsubcategories')
     
     context = {
         'categories': categories,
     }
     return render(request, 'index.html',context)
 
-def shop_page(request, subcategory_pk=None): 
-    products = Product.objects.all().select_related('subcategory__category')
-    categories = Category.objects.all()
-    selected_subcategory = None 
+
+
+def shop_page(request, subsubcategory_pk=None): 
+    products = Product.objects.all().select_related('subsubcategory__subcategory__category')
+    categories = Category.objects.all().prefetch_related('subcategories__subsubcategories')
+    selected_subsubcategory = None 
 
     query = request.GET.get('q')
     if query:
@@ -44,10 +46,10 @@ def shop_page(request, subcategory_pk=None):
             Q(description__icontains=query)
         ).distinct()
     
-    if subcategory_pk:
-        subcategory = get_object_or_404(SubCategory, pk=subcategory_pk) 
-        products = products.filter(subcategory=subcategory)
-        selected_subcategory = subcategory.name 
+    if subsubcategory_pk:
+        subsubcategory = get_object_or_404(SubSubCategory, pk=subsubcategory_pk) 
+        products = products.filter(subsubcategory=subsubcategory)
+        selected_subsubcategory = subsubcategory.name 
         paginator = Paginator(products, 3)
         page = request.GET.get('page')
         paged_products = paginator.get_page(page)
@@ -64,10 +66,11 @@ def shop_page(request, subcategory_pk=None):
         'products': paged_products,
         'categories': categories, 
         'subcategories': subcategories, 
-        'selected_subcategory': selected_subcategory, 
+        'selected_subsubcategory': selected_subsubcategory, 
         'product_count' : product_count,
     }
     return render(request, 'shop.html', context)
+
 
 def product_details(request, pk):
     product = get_object_or_404(Product, pk=pk)
@@ -188,7 +191,7 @@ def is_admin(user):
 @login_required
 @user_passes_test(is_admin)
 def admin_dashboard(request):
-    products = Product.objects.all().select_related('subcategory__category') 
+    products = Product.objects.all().select_related('subsubcategory__subcategory__category') 
     context = {
         'products': products  
     }
@@ -199,6 +202,12 @@ def load_subcategories(request):
     subcategories = SubCategory.objects.filter(category_id=category_id).order_by('name')
     subcategory_list = [{'id': subcategory.id, 'name': subcategory.name} for subcategory in subcategories]
     return JsonResponse(subcategory_list, safe=False)
+
+def load_subsubcategories(request):
+    subcategory_id = request.GET.get('subcategory_id')
+    subsubcategories = SubSubCategory.objects.filter(subcategory_id=subcategory_id).order_by('name')
+    subsub_list = [{'id': subsub.id, 'name': subsub.name} for subsub in subsubcategories]
+    return JsonResponse(subsub_list, safe=False)
 
 
 @login_required
@@ -308,6 +317,54 @@ def delete_category(request, pk):
         category.delete()
         return redirect('admin_categories')
     return render(request, 'admin_category/delete_category.html', {'category': category})
+
+@login_required
+@user_passes_test(is_admin)
+def admin_subsubcategories(request):
+    subsubcategories = SubSubCategory.objects.select_related('subcategory__category').all()
+    context = {'subsubcategories': subsubcategories}
+    return render(request,'admin_category/admin_subsubcategories.html',context) 
+
+@login_required
+@user_passes_test(is_admin)
+def add_subsubcategory(request):
+    if request.method == 'POST':
+        form = SubSubCategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_subsubcategories') 
+    else:
+        form = SubSubCategoryForm()
+    return render(request, 'admin_category/add_subsubcategory.html', {'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def edit_subsubcategory(request, pk):
+    subsubcategory = get_object_or_404(SubSubCategory, pk=pk)
+
+    if request.method == 'POST':
+        form = SubSubCategoryForm(request.POST, instance=subsubcategory)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_subsubcategories') 
+    else:
+        form = SubSubCategoryForm(instance=subsubcategory)
+
+    context = {
+        'form': form,
+        'subsubcategory': subsubcategory 
+    }
+    return render(request, 'admin_category/edit_subsubcategory.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def delete_subsubcategory(request, pk):
+    subsubcategory = get_object_or_404(SubSubCategory, pk=pk)
+    if request.method == 'POST':
+        subsubcategory.delete()
+        return redirect('admin_subsubcategories') 
+    return render(request, 'admin_category/delete_subsubcategory.html', {'subsubcategory': subsubcategory})
+
 
 login_required
 @user_passes_test(is_admin)

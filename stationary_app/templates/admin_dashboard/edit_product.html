@@ -27,7 +27,8 @@
 
         input[type="text"],
         textarea,
-        input[type="number"] {
+        input[type="number"],
+        select {
             width: 100%;
             padding: 8px;
             box-sizing: border-box;
@@ -63,6 +64,9 @@
             
             <div>
                 {{ form.subcategory.label_tag }} {{ form.subcategory }}
+            </div>
+            <div>
+                {{ form.subsubcategory.label_tag }} {{ form.subsubcategory }}
             </div>
             <div>
                 {{ form.company.label_tag }} {{ form.company }}
@@ -128,11 +132,18 @@
         $(document).ready(function() {
             const categorySelect = $('#id_category');
             const subcategorySelect = $('#id_subcategory');
+            const subsubcategorySelect = $('#id_subsubcategory');
 
+            // Store initial values from Django rendering
+            const initialSubcategoryId = subcategorySelect.val();
+            const initialSubsubcategoryId = subsubcategorySelect.val();
+
+            // 1. Function to load SubCategories based on Category selection
             function loadSubcategories(initialLoad = false) {
                 const categoryId = categorySelect.val();
-                // Store the current subcategory value for initial selection
-                const initialSubcategoryId = subcategorySelect.val(); 
+
+                // Reset SubSubCategory field
+                subsubcategorySelect.html('<option value="">--- Select Subcategory First ---</option>').prop('disabled', true);
 
                 if (!categoryId) {
                     subcategorySelect.html('<option value="">--- Select Category First ---</option>');
@@ -149,28 +160,21 @@
                     dataType: 'json',
                     success: function(data) {
                         subcategorySelect.html('<option value="">--- Select Subcategory ---</option>');
-                        let foundInitial = false;
                         $.each(data, function(key, value) {
                             const option = $('<option></option>').attr('value', value.id).text(value.name);
+                            
+                            // Pre-select if this is the initial load for the current product
                             if (initialLoad && value.id == initialSubcategoryId) {
                                 option.prop('selected', true);
-                                foundInitial = true;
+                                // After setting the subcategory, trigger the load for the sub-subcategory
+                                loadSubsubcategories(true); 
                             }
                             subcategorySelect.append(option);
                         });
-
-                        // If no subcategories found, or if editing and the current subcategory
-                        // doesn't belong to the newly selected category, it remains unselected.
-                        if (initialLoad && !foundInitial && initialSubcategoryId) {
-                            // Re-select the initial one if not in the new list (e.g. for pre-selected value)
-                            // This part ensures that if a product is being edited, its subcategory 
-                            // is pre-selected on load for its initial category.
-                            const existingOption = subcategorySelect.find(`option[value="${initialSubcategoryId}"]`);
-                            if (existingOption.length === 0) {
-                                // Add a dummy option for the currently selected subcategory if it's not in the list
-                                // for the currently selected category (which shouldn't happen on page load
-                                // due to form __init__ logic, but is good for robustness).
-                            }
+                        
+                        // If not initial load, clear subsubcategories
+                        if (!initialLoad) {
+                            subsubcategorySelect.html('<option value="">--- Select Subcategory ---</option>').prop('disabled', true);
                         }
                     },
                     error: function() {
@@ -179,24 +183,64 @@
                 });
             }
 
-            // Trigger change event
+            // 2. Function to load SubSubCategories based on SubCategory selection (NEW)
+            function loadSubsubcategories(initialLoad = false) {
+                const subcategoryId = subcategorySelect.val();
+
+                if (!subcategoryId) {
+                    subsubcategorySelect.html('<option value="">--- Select Subcategory First ---</option>');
+                    subsubcategorySelect.prop('disabled', true);
+                    return;
+                }
+
+                subsubcategorySelect.prop('disabled', false);
+                subsubcategorySelect.html('<option value="">Loading...</option>');
+
+                $.ajax({
+                    url: "{% url 'ajax_load_subsubcategories' %}",
+                    data: { 'subcategory_id': subcategoryId },
+                    dataType: 'json',
+                    success: function(data) {
+                        subsubcategorySelect.html('<option value="">--- Select Sub-Subcategory ---</option>');
+                        $.each(data, function(key, value) {
+                            const option = $('<option></option>').attr('value', value.id).text(value.name);
+                            
+                            // Pre-select if this is the initial load for the current product
+                            if (initialLoad && value.id == initialSubsubcategoryId) {
+                                option.prop('selected', true);
+                            }
+                            subsubcategorySelect.append(option);
+                        });
+                    },
+                    error: function() {
+                        subsubcategorySelect.html('<option value="">Error loading sub-subcategories</option>');
+                    }
+                });
+            }
+
+
+            // Attach change handlers
             categorySelect.change(function() {
                 loadSubcategories(false); // Not initial load on change
             });
+            subcategorySelect.change(function() {
+                loadSubsubcategories(false); // Not initial load on change
+            });
 
-            // Initialize on page load
-            // The ProductForm's __init__ already populates the subcategory queryset and initial category/subcategory
-            // for the edit case. We just need to ensure the dynamic loading is set up for subsequent changes.
-            // On page load, the subcategory field will already be correctly populated for the product's category.
-            // We only need to manually call loadSubcategories if the category field is NOT set initially (e.g., if the form failed validation on POST and we want to refresh).
+            // Initial state on page load (For editing, the form's __init__ populates the subcategory list, 
+            // but we need to ensure the subsubcategory list is populated and correct selections are made)
+
+            // 1. Initial Load: Check if a category is selected (which it should be on edit)
             if (categorySelect.val()) {
-                 // For edit, let the form's __init__ handle the initial state
-                 // but make sure to enable the subcategory field if a category is selected.
-                 subcategorySelect.prop('disabled', false);
+                // Since Django's form __init__ already populates the subcategory list for the initial category,
+                // we just need to ensure the subsub list is populated correctly based on the initial subcategory.
+                if (initialSubcategoryId) {
+                    loadSubsubcategories(true); // Load sub-subcategories and pre-select the initial value
+                }
             } else {
-                 loadSubcategories(true); // Initial load if category isn't set
+                // Fallback for cases where category is somehow not pre-selected
+                loadSubcategories(true); 
             }
-
         });
     </script>
     

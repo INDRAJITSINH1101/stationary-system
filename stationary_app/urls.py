@@ -4,7 +4,7 @@ from .import views
 urlpatterns = [
     path('', views.home_page,name='home'),
     path('shop/',views.shop_page,name='shop'),
-    path('shop/subcategory/<int:subcategory_pk>/', views.shop_page, name='shop_by_subcategory'),
+    path('shop/subsubcategory/<int:subsubcategory_pk>/', views.shop_page, name='shop_by_subsubcategory'),
 
     path('about/', views.about_page,name='about'),
     path('services/',views.services_page,name='services'),
@@ -45,7 +45,13 @@ urlpatterns = [
     path('admin_dashboard/subcategories/edit/<int:pk>/', views.edit_subcategory, name='edit_subcategory'),
     path('admin_dashboard/subcategories/delete/<int:pk>/', views.delete_subcategory, name='delete_subcategory'),
 
+    path('admin_dashboard/subsubcategories',views.admin_subsubcategories, name='admin_subsubcategories'),
+    path('admin_dashboard/subsubcategories/add/', views.add_subsubcategory, name='add_subsubcategory'),
+    path('admin_dashboard/subsubcategories/edit/<int:pk>/', views.edit_subsubcategory, name='edit_subsubcategory'),
+    path('admin_dashboard/subsubcategories/delete/<int:pk>/', views.delete_subsubcategory, name='delete_subsubcategory'),
+
     path('ajax/load-subcategories/', views.load_subcategories, name='ajax_load_subcategories'),
+    path('ajax/load-subsubcategories/', views.load_subsubcategories, name='ajax_load_subsubcategories'),
 
     path('paymenthandler/', views.paymenthandler, name='paymenthandler'),
     path('place_cod_order/', views.place_cod_order, name='place_cod_order'),

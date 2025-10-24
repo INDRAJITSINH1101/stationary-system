@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from .models import UserProfile,Product
 import re
 from django.core.exceptions import ValidationError
-from .models import Category,ProductImage,SubCategory
+from .models import Category,ProductImage,SubCategory,SubSubCategory
 
 
 class signupform(forms.ModelForm):
@@ -91,25 +91,51 @@ class ProductForm(forms.ModelForm):
         label="Category"
     )
 
+    subcategory = forms.ModelChoiceField(
+        queryset=SubCategory.objects.all(),
+        required=False,
+        label="SubCategory"
+    )
+
     class Meta:
         model = Product
-        fields = ['name',  'category','subcategory', 'company', 'price', 'gst_rate', 'description', 'image' , 'stock']
+        fields = ['name', 'category', 'subcategory', 'subsubcategory', 'company', 'price', 'gst_rate', 'description', 'image', 'stock']
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if 'subcategory' in self.fields:
-            self.fields['subcategory'].queryset = SubCategory.objects.none()
+        self.fields['subcategory'].queryset = SubCategory.objects.none()
+        self.fields['subsubcategory'].queryset = SubSubCategory.objects.none()
 
+        if self.instance.pk and self.instance.subsubcategory:
+            current_subsub = self.instance.subsubcategory
+            current_sub = current_subsub.subcategory
+            current_cat = current_sub.category
+            
+            self.fields['category'].initial = current_cat
+            self.fields['subcategory'].queryset = SubCategory.objects.filter(category=current_cat).order_by('name')
+            self.fields['subcategory'].initial = current_sub
+            self.fields['subsubcategory'].queryset = SubSubCategory.objects.filter(subcategory=current_sub).order_by('name')
+        
+        # Handle POST data or AJAX load for subcategory dependency
         if 'category' in self.data:
             try:
                 category_id = int(self.data.get('category'))
                 self.fields['subcategory'].queryset = SubCategory.objects.filter(category_id=category_id).order_by('name')
             except (ValueError, TypeError):
                 pass
-        elif self.instance.pk and self.instance.subcategory:
-            self.fields['subcategory'].queryset = SubCategory.objects.filter(category=self.instance.subcategory.category).order_by('name')
-            self.fields['category'].initial = self.instance.subcategory.category
+
+        # Handle POST data or AJAX load for subsubcategory dependency (NEW)
+        if 'subcategory' in self.data:
+            try:
+                subcategory_id = int(self.data.get('subcategory'))
+                self.fields['subsubcategory'].queryset = SubSubCategory.objects.filter(subcategory_id=subcategory_id).order_by('name')
+            except (ValueError, TypeError):
+                pass
+        
+    def save(self, commit=True):
+        # The subcategory field is only for filtering, ensure Product.subsubcategory gets the right value
+        return super().save(commit=commit)
 
 class CategoryForm(forms.ModelForm):
     class Meta:
@@ -120,6 +146,11 @@ class SubCategoryForm(forms.ModelForm):
     class Meta:
         model = SubCategory
         fields = ['category', 'name']
+
+class SubSubCategoryForm(forms.ModelForm):
+    class Meta:
+        model = SubSubCategory
+        fields = ['subcategory', 'name']
 
 class ProductImageForm(forms.ModelForm):
     class Meta:

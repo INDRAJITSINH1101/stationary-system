@@ -15,6 +15,61 @@
         height: 100%;
         object-fit: cover; 
     }
+    
+    /* CUSTOM CSS FOR STABLE NESTED VERTICAL DROPDOWN (FINAL FIXES) */
+    
+    /* 1. Main Dropdown Hover */
+    .dropdown-hover:hover > .dropdown-menu-hover {
+        display: block;
+    }
+    
+    /* 2. Nested Dropdown Setup */
+    .dropdown-submenu {
+        position: relative;
+    }
+    
+    /* Hide all nested menus by default */
+    .dropdown-submenu > .dropdown-menu {
+        display: none;
+        
+        /* FIX: Use absolute positioning and a high z-index 
+           This prevents the submenu from pushing other content (solving the white space issue). */
+        position: absolute; 
+        z-index: 1050; /* Ensure it is always on top */
+        
+        /* Position to the right and align perfectly with the parent item */
+        top: 0;
+        left: 100%; 
+        margin-top: 0; 
+        margin-left: 0; 
+        
+        min-width: 12rem; 
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175); 
+        border: 1px solid rgba(0, 0, 0, 0.15); 
+    }
+
+    /* 3. Show Nested Menu on Hover for the immediate parent list item */
+    .dropdown-submenu:hover > .dropdown-menu {
+        display: block;
+    }
+
+    /* 4. Ensure the dropdown toggle doesn't get stuck on click */
+    .dropdown-hover > .dropdown-toggle:active {
+        pointer-events: none;
+    }
+    
+    /* 5. Visual Arrow and spacing for better readability */
+    .dropdown-item .float-end {
+        line-height: inherit; 
+        font-weight: bold;
+        opacity: 0.7; 
+    }
+    
+    /* Ensure all list items and links are flush for stable hovering */
+    .dropdown-menu li {
+        padding: 0;
+    }
+    
 </style>
 <div class="hero">
   <div class="container">
@@ -30,98 +85,140 @@
 </div>
 <div class="untree_co-section product-section before-footer-section">
   <div class="container">
-    <div class="row mb-4">
-        <div class="col-md-4">
-          <h2>Filter by SubCategory</h2>
+    <div class="row">
+        
+        <div class="col-md-3">
+          <h2>Filter by Category</h2>
           <div class="mb-4">
-            <label for="subcategory-filter" class="form-label">Select a SubCategory:</label>
-            <select class="form-select" id="subcategory-filter" onchange="window.      location.href=this. value;">
-              <option value="{% url 'shop' %}" {% if not selected_subcategory %}selected{% endif %}>All Products</option>
-              {% for subcategory in subcategories %} 
-              <option value="{% url 'shop_by_subcategory' subcategory_pk=subcategory.pk %}" 
-                {% if selected_subcategory == subcategory.name %}selected{% endif %}>
-                {{ subcategory.category.name }} - {{ subcategory.name }} </option>
-              {% endfor %}
-            </select>
+            <div class="dropdown dropdown-hover">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Filter by SubCategory 
+                    {% if selected_subsubcategory %}: {{ selected_subsubcategory }}{% endif %}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-hover" aria-labelledby="dropdownMenuButton">
+                    <li>
+                        <a class="dropdown-item {% if not selected_subsubcategory %}active{% endif %}" href="{% url 'shop' %}">All Products</a>
+                    </li>
+
+                    {% for category in categories %}
+                        <li class="dropdown-submenu">
+                            <a class="dropdown-item" href="#">
+                                {{ category.name }} <span class="float-end">&raquo;</span> 
+                            </a>
+                            <ul class="dropdown-menu dropdown-submenu">
+                                {% for subcategory in category.subcategories.all %}
+                                    {% if subcategory.subsubcategories.all %}
+                                        <li class="dropdown-submenu">
+                                            <a class="dropdown-item" href="#">
+                                                {{ subcategory.name }} <span class="float-end">&raquo;</span>
+                                            </a>
+                                            <ul class="dropdown-menu dropdown-submenu">
+                                                {% for subsub in subcategory.subsubcategories.all %}
+                                                <li>
+                                                    <a class="dropdown-item {% if selected_subsubcategory == subsub.name %}active{% endif %}" 
+                                                       href="{% url 'shop_by_subsubcategory' subsubcategory_pk=subsub.pk %}">
+                                                        {{ subsub.name }} 
+                                                    </a>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </li>
+                                    {% else %}
+                                        <li>
+                                            <a class="dropdown-item {% if selected_subsubcategory == subcategory.name %}active{% endif %}" 
+                                               href="{% url 'shop' %}?subcategory_id={{ subcategory.pk }}">
+                                                {{ subcategory.name }} 
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
           </div>
         </div>
-        <header class="border-bottom mb-4 pb-3">
-		<div class="form-inline">
-			<span class="mr-md-auto"><b>{{ product_count }}</b> Items found </span>
-			
-		</div>
-</header>
-    </div>
+        
+        <div class="col-md-9">
+            <header class="border-bottom mb-4 pb-3">
+                <div class="form-inline">
+                    <span class="mr-md-auto"><b>{{ product_count }}</b> Items found </span>
+                </div>
+            </header>
     
-    <div class="row">
-    {% for product in products %}
-    <div class="col-md-4">
-      <figure class="card card-product-grid">
-            <a href="{% url 'product_details' pk=product.pk %}" class="product-item">
-                <div class="img-wrap">
-                    <img src="{{ product.image.url }}" class="img-fluid product-thumbnail">
-                </div>
-            </a> 
-            <figcaption class="info-wrap">
-                <div class="fix-height">
-                    <h3 class="product-title">{{ product.name }}</h3>
-                    <h4 class="product-company">Company: {{ product.company }}</h4>
-                    <h4 class="product-price">₹{{ product.price }}</h4>
+            <div class="row">
+                {% for product in products %}
+                <div class="col-lg-4 col-md-6 col-sm-12"> 
+                  <figure class="card card-product-grid">
+                        <a href="{% url 'product_details' pk=product.pk %}" class="product-item">
+                            <div class="img-wrap">
+                                <img src="{{ product.image.url }}" class="img-fluid product-thumbnail">
+                            </div>
+                        </a> 
+                        <figcaption class="info-wrap">
+                            <div class="fix-height">
+                                <h3 class="product-title">{{ product.name }}</h3>
+                                <h4 class="product-company">Company: {{ product.company }}</h4>
+                                <h4 class="product-price">₹{{ product.price }}</h4>
 
-                    {% if product.is_in_stock %}
-                        <p class="text-success">In Stock</p>
+                                {% if product.is_in_stock %}
+                                    <p class="text-success">In Stock</p>
+                                {% else %}
+                                    <p class="text-danger">Out of Stock</p>
+                                {% endif %}
+                                
+                                <form action="{% url 'add_cart' product.id %}" method="post">
+                                  {% csrf_token %}
+                                  {% if product.is_in_stock %}
+                                    <button type="submit" class="btn btn-block btn-primary">Add to Cart</button>
+                                  {% else %}
+                                    <button type="button" class="btn btn-block btn-secondary" disabled>Out of Stock</button>
+                                  {% endif %}
+                                </form>
+
+                            </div>
+                        </figcaption>
+                  </figure>
+                </div>
+                {% empty %}
+                  <div class="col-12">
+                    <div class="alert alert-info text-center" role="alert">
+                      <h2 class="alert-heading">No Products Found </h2>
+                      <p>We couldn't find any products in this category. Please try a different filter.</p>
+                    </div>
+                  </div>
+                {% endfor %}
+            </div>
+            
+            <nav class="mt-4" aria-label="Page navigation sample">
+                {% if products.has_other_pages %}
+                <ul class="pagination justify-content-center">
+                    {% if products.has_previous %}
+                    <li class="page-item  "><a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a></li>
                     {% else %}
-                        <p class="text-danger">Out of Stock</p>
+                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
                     {% endif %}
-                    
-                    <form action="{% url 'add_cart' product.id %}" method="post">
-                      {% csrf_token %}
-                      {% if product.is_in_stock %}
-                        <button type="submit" class="btn btn-block btn-primary">Add to Cart</button>
-                      {% else %}
-                        <button type="button" class="btn btn-block btn-secondary" disabled>Out of Stock</button>
-                      {% endif %}
-                    </form>
-
-                </div>
-            </figcaption>
-      </figure>
-    </div>
-    {% empty %}
-    <div class="col-12">
-        <div class="alert alert-info text-center" role="alert">
-            <h2 class="alert-heading">No Products Found </h2>
+            
+                    {% for i in products.paginator.page_range %}
+                        {% if products.number == i %}
+                        <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+            
+                    {% if products.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}">Next</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+            </nav>
         </div>
-      </div>
-      {% endfor %}
     </div>
-        <nav class="mt-4" aria-label="Page navigation sample">
-	  {% if products.has_other_pages %}
-    <ul class="pagination justify-content-center">
-		{% if products.has_previous %}
-    <li class="page-item  "><a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a></li>
-		{% else %}
-		<li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-		{% endif %}
-
-		{% for i in products.paginator.page_range %}
-			{% if products.number == i %}
-    		<li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
-			{% else %}
-				<li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
-			{% endif %}
-    {% endfor %}
-
-		{% if products.has_next %}
-    	<li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}">Next</a></li>
-		{% else %}
-			<li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
-		{% endif %}
-    </ul>
-	  {% endif %}
-    </nav>
   </div>
-
-  
 </div>
 {% endblock %}
