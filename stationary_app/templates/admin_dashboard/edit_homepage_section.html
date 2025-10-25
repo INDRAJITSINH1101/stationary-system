@@ -1,0 +1,72 @@
+{% extends 'base1.html' %}
+{% load static %}
+{% block content %}
+<style>
+    /* Basic styling for the form section */
+    .form-table-layout {
+        border: 1px solid #dee2e6; /* Light border around the form group */
+        border-radius: .25rem;
+        padding: 20px;
+        background-color: #f8f9fa; /* Light background */
+    }
+    .form-row-custom > label {
+        flex: 0 0 200px; /* Fixed width for labels */
+        font-weight: 600;
+        padding-right: 15px;
+    }
+    .form-row-custom > div {
+        flex-grow: 1; /* Input takes remaining space */
+    }
+    .form-row-custom input[type="text"], 
+    .form-row-custom textarea, 
+    .form-row-custom select {
+        width: 100%;
+        max-width: 400px; /* Limit input width for better aesthetics */
+    }
+    .current-image-preview {
+        margin-top: 10px;
+        border: 1px dashed #ced4da;
+        padding: 5px;
+        display: inline-block;
+        background-color: #fff;
+    }
+</style>
+<div class="container" style="max-width: 800px; margin-top: 50px;">
+    <h1 class="mb-4 text-warning">✏️ Edit Homepage Section: {{ section.title }}</h1>
+    <div class="form-table-layout">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="d-flex align-items-start mb-3 form-row-custom">
+                    <label for="{{ field.id_for_label }}" class="form-label pt-2">{{ field.label }}</label>
+                    <div class="flex-grow-1">
+                        {{ field }}
+                        
+                        {% if field.help_text %}
+                            <div class="form-text text-muted">{{ field.help_text }}</div>
+                        {% endif %}
+                        
+                        {% if field.name == 'image' and section.image %}
+                            <div class="current-image-preview">
+                                <p class="mb-1 small text-secondary">Current Image:</p>
+                                <img src="{{ section.image.url }}" alt="{{ section.title }}" width="100" class="img-thumbnail">
+                            </div>
+                        {% endif %}
+                        
+                        {% for error in field.errors %}
+                            <div class="text-danger small mt-1">⚠️ {{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+            
+            <hr>
+            <div class="text-end">
+                <button type="submit" class="btn btn-warning me-2">💾 Save Changes</button>
+                <a href="{% url 'admin_homepage_sections' %}" class="btn btn-secondary">❌ Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

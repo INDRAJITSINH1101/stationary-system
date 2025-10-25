@@ -1,0 +1,17 @@
+{% extends 'base1.html' %}
+{% load static %}
+{% block content %}
+<div class="container" style="max-width: 600px; margin-top: 50px;">
+    <h1>Delete Homepage Section</h1>
+    <div class="alert alert-warning" role="alert">
+        Are you sure you want to delete the homepage section: <strong>{{ section.title }}</strong>?
+        This action cannot be undone.
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a href="{% url 'admin_homepage_sections' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

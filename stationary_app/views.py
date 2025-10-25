@@ -733,5 +733,3 @@ def delete_subcategory(request, pk):
         subcategory.delete()
         return redirect('admin_subcategories') 
     return render(request, 'admin_category/delete_subcategory.html', {'subcategory': subcategory})
-
-
