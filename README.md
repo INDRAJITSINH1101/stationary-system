@@ -1,12 +1,19 @@
 🚀 Features
 
   ✔ Product CRUD — Add, Edit, Delete, View Stationary Items
+  
   ✔ Category Management — Organize products by category
+  
   ✔ Inventory Control — Track stock levels
+  
   ✔ Responsive Design — Works well on both desktop & mobile
+  
   ✔ User-Friendly UI — Clean and intuitive interface
+  
   ✔ Admin Panel — Centralized control dashboard using Django admin
+  
   ✔ Secure — Proper authentication and access control
+  
   ✔ Search & Filters — Quick product lookup
 
 🔧 Features Overview
